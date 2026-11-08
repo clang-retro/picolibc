@@ -15,6 +15,7 @@ hooks:
 
 extra:
   retro:
+    doxygen: clang-retro-docs/.docs/Doxyfile
     root: ..
     github: clang-retro/picolibc
     branch: main
@@ -32,4 +33,5 @@ nav:
   - AmigaOS: amigaos.md
   - Atari TOS: tos.md
   - Building: building.md
+  - API reference: api/index.html
   - All clang-retro projects: https://clang-retro.github.io/
