@@ -34,6 +34,7 @@
  */
 
 #include "local-os2.h"
+#include <errno.h>
 #include <sys/time.h>
 #include <time.h>
 
@@ -65,5 +66,59 @@ nanosleep(const struct timespec *req, struct timespec *rem)
     __os2_sleep(ms);
     if (rem)
         rem->tv_sec = rem->tv_nsec = 0;
+    return 0;
+}
+
+/* CLOCK_MONOTONIC on 32-bit OS/2 counts the milliseconds since the system
+ * started (QSV_MS_COUNT), which wrap after 49 days. 16-bit OS/2 has only
+ * the clock of the day. */
+int
+clock_gettime(clockid_t clock_id, struct timespec *tp)
+{
+    switch (clock_id) {
+    case CLOCK_REALTIME: {
+        struct timeval tv;
+        if (gettimeofday(&tv, NULL) < 0) {
+            errno = EINVAL;
+            return -1;
+        }
+        tp->tv_sec = tv.tv_sec;
+        tp->tv_nsec = tv.tv_usec * 1000;
+        return 0;
+    }
+#ifdef __i386__
+    case CLOCK_MONOTONIC: {
+        unsigned long ms;
+        if (DosQuerySysInfo(__OS2_QSV_MS_COUNT, __OS2_QSV_MS_COUNT, &ms, sizeof(ms))) {
+            errno = EINVAL;
+            return -1;
+        }
+        tp->tv_sec = ms / 1000;
+        tp->tv_nsec = (long)(ms % 1000) * 1000000;
+        return 0;
+    }
+#endif
+    default:
+        errno = EINVAL;
+        return -1;
+    }
+}
+
+int
+clock_getres(clockid_t clock_id, struct timespec *res)
+{
+    if (clock_id != CLOCK_REALTIME
+#ifdef __i386__
+        && clock_id != CLOCK_MONOTONIC
+#endif
+    ) {
+        errno = EINVAL;
+        return -1;
+    }
+    if (res) {
+        /* The clock ticks every 31 or 32 ms. */
+        res->tv_sec = 0;
+        res->tv_nsec = 32000000;
+    }
     return 0;
 }

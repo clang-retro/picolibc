@@ -167,6 +167,27 @@ __os2_ret DosCreatePipe(__os2_handle *, __os2_handle *, __os2_word);
 __os2_ret DosDupHandle(__os2_handle, __os2_handle *);
 __os2_ret DosQueryFHState(__os2_handle, __os2_word *);
 __os2_ret DosSetFHState(__os2_handle, __os2_word);
+__os2_ret DosAllocThreadLocalMemory(__os2_word, unsigned long **);
+__os2_ret DosEnterCritSec(void);
+__os2_ret DosExitCritSec(void);
+__os2_ret DosCreateThread(unsigned long *, void (*)(unsigned long), unsigned long, __os2_word,
+                          unsigned long);
+__os2_ret DosCreateMutexSem(__os2_psz, unsigned long *, __os2_word, __os2_word);
+__os2_ret DosRequestMutexSem(unsigned long, unsigned long);
+__os2_ret DosReleaseMutexSem(unsigned long);
+__os2_ret DosCloseMutexSem(unsigned long);
+__os2_ret DosCreateEventSem(__os2_psz, unsigned long *, __os2_word, __os2_word);
+__os2_ret DosPostEventSem(unsigned long);
+__os2_ret DosResetEventSem(unsigned long, __os2_word *);
+__os2_ret DosWaitEventSem(unsigned long, unsigned long);
+__os2_ret DosCloseEventSem(unsigned long);
+__os2_ret DosQuerySysInfo(__os2_word, __os2_word, void *, __os2_word);
+#define __OS2_QSV_MS_COUNT         14
+#define __OS2_SEM_INDEFINITE_WAIT  0xffffffffUL
+#define __OS2_SEM_IMMEDIATE_RETURN 0UL
+#define __OS2_ERROR_TIMEOUT        640
+/* The mutex semaphore in *h, made on first use (lock.c). */
+unsigned long __os2_mutex_of(volatile unsigned long *h);
 #define __os2_pipe(r, w, n)            DosCreatePipe(r, w, n)
 #define __os2_getfhstate(h, s)         DosQueryFHState(h, s)
 #define __os2_setfhstate(h, s)         DosSetFHState(h, s)
