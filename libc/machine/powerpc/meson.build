@@ -40,7 +40,6 @@ srcs_machine = [
 #  'atoufix32.c',
 #  'atoufix64.c',
   'hwcap.c',
-  'setjmp.S',
   'tls.c',
 #  'strtosfix16.c',
 #  'strtosfix32.c',
@@ -58,6 +57,14 @@ srcs_machine = [
 #  'vfprintf.c',
 #  'vfscanf.c',
 ]
+
+# setjmp.S is for ELF assemblers. XCOFF objects (classic Mac OS, from
+# clang's powerpc-apple-macos9 target) get setjmp-xcoff.c instead.
+if cc.get_define('__ELF__') != ''
+  srcs_machine += 'setjmp.S'
+else
+  srcs_machine += 'setjmp-xcoff.c'
+endif
 
 subdir('machine')
 
