@@ -69,4 +69,4 @@ documentation](https://github.com/picolibc/picolibc/tree/main/doc).
 The fork's changes are under picolibc's licenses; see
 [COPYING.picolibc](https://github.com/clang-retro/picolibc/blob/main/COPYING.picolibc).
 The SDKs that use it are documented on their own sites: see [all
-clang-retro projects](https://clang-retro.github.io/dos-sdk/projects/).
+clang-retro projects](https://clang-retro.github.io/).
