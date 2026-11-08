@@ -45,7 +45,7 @@
 
 #define DIR_FIND(d)    ((struct __os2_findbuf *)(d)->buf)
 #define DIR_PATTERN(d) ((char *)((d) + 1))
-#define NO_HANDLE      ((__os2_handle)-1) /* HDIR_CREATE */
+#define NO_HANDLE      ((__os2_handle)~0u) /* HDIR_CREATE */
 
 _Static_assert(sizeof(struct __os2_findbuf) <= sizeof(((DIR *)0)->buf), "find buffer");
 
