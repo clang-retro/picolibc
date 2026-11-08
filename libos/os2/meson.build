@@ -46,6 +46,11 @@ srcs_os_os2_fallback = [
   'sysconf.c',
 ]
 
+# Threads, __thread variables and the C library's locks: 32-bit only.
+if host_machine.cpu_family() != 'i8086'
+  srcs_os_os2 += ['lock.c', 'thread.c']
+endif
+
 srcs_libos += srcs_os_os2 + srcs_os_os2_fallback
 
 src_os_os2 = files(srcs_os_os2)
@@ -53,6 +58,9 @@ src_os_os2 = files(srcs_os_os2)
 # process.h: spawn and its P_ modes.
 if really_install
   install_headers('include/process.h', install_dir: include_dir)
+  if host_machine.cpu_family() != 'i8086'
+    install_headers('include/threads.h', install_dir: include_dir)
+  endif
 endif
 
 # On i8086 the compiler calls the integer (__i_printf) and long
