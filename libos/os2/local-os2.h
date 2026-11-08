@@ -196,6 +196,8 @@ __os2_ret __OS2_API DosFindClose(__os2_handle);
 __os2_ret __OS2_API DosQCurDisk(__os2_word __far *, unsigned long __far *);
 __os2_ret __OS2_API DosQCurDir(__os2_word, char __far *, __os2_word __far *);
 __os2_ret __OS2_API DosGetPID(struct __os2_pidinfo __far *);
+__os2_ret __OS2_API DosGetEnv(__os2_word __far *, __os2_word __far *);
+__os2_ret __OS2_API DosGetInfoSeg(__os2_word __far *, __os2_word __far *);
 #define __os2_delete(p)                DosDelete(p, 0)
 #define __os2_move(f, t)               DosMove(f, t, 0)
 #define __os2_mkdir(p)                 DosMkDir(p, 0)
@@ -225,9 +227,27 @@ extern unsigned char __os2_fd_flags[__OS2_MAX_FD];
 
 /* The heap (sbrk.c). */
 extern char         *__os2_heap_base, *__os2_brk, *__os2_heap_end;
+#ifndef __i386__
+void __os2_init_heap(void);
+#endif
 
-int                  __os2_error(unsigned code);
-int                  __os2_isdev(int fd);
-long                 __os2_unix_time(unsigned short date, unsigned short time);
+/* The environment and the command line (env.c). */
+typedef const char __OS2_FAR *__os2_fstr;
+extern __os2_fstr             __os2_env, __os2_cmdline;
+size_t                        __os2_fstrlen(__os2_fstr s);
+char                         *__os2_fdup(__os2_fstr s, size_t n);
+void                          __os2_init_environ(void);
+extern char                 **environ;
+
+#ifndef __i386__
+/* 16-bit DLLs (dllstart.c, dllframe.c). */
+extern __os2_word __os2_dll_module;
+unsigned          __os2_dll_start(void);
+char            **__win16_frame_pointer_address(void);
+#endif
+
+int  __os2_error(unsigned code);
+int  __os2_isdev(int fd);
+long __os2_unix_time(unsigned short date, unsigned short time);
 
 #endif /* _LOCAL_OS2_H_ */

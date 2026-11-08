@@ -14,6 +14,10 @@ has_os_fileio = true
 srcs_os_os2 = [
   '_exit.c',
   'dirent.c',
+  'dllframe.c',
+  'dllframesize.c',
+  'dllstart.c',
+  'env.c',
   'error.c',
   'fd.c',
   'files.c',
@@ -74,8 +78,17 @@ foreach params : targets
                 install_dir : instdir,
                 build_by_default : true)
 
-  # The startup code of 32-bit DLLs.
-  if host_machine.cpu_family() != 'i8086'
+  # The startup code of DLLs: libentry.obj (16-bit), dllcrt0.o (32-bit).
+  if host_machine.cpu_family() == 'i8086'
+    custom_target('libentry' + target,
+                  input : 'libentry.S',
+                  output : 'libentry.obj',
+                  command : cc.cmd_array() + target_c_args + c_args +
+                            ['-c', '@INPUT@', '-o', '@OUTPUT@'],
+                  install : really_install,
+                  install_dir : instdir,
+                  build_by_default : true)
+  else
     custom_target('dllcrt0' + target,
                   input : 'dllcrt0.S',
                   output : 'dllcrt0.o',
