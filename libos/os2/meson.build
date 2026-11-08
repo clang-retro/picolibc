@@ -13,9 +13,12 @@ has_os_fileio = true
 
 srcs_os_os2 = [
   '_exit.c',
+  'dirent.c',
   'error.c',
   'fd.c',
   'files.c',
+  'getcwd.c',
+  'getpid.c',
   'read.c',
   'sbrk.c',
   'start.c',
@@ -25,7 +28,6 @@ srcs_os_os2 = [
 
 srcs_os_os2_fallback = [
   'fpathconf.c',
-  'getpid.c',
   'kill.c',
   'pathconf.c',
   'raise.c',
