@@ -1,0 +1,37 @@
+# The documentation site of the clang-retro additions to picolibc:
+# https://clang-retro.github.io/picolibc/
+# Build it with `pip install -r .docs/requirements.txt` and `mkdocs serve`
+# in this directory.
+INHERIT: .docs/base.yml
+site_name: clang-retro picolibc
+site_description: The C library of the clang-retro targets, and what the fork adds to picolibc
+site_url: https://clang-retro.github.io/picolibc/
+repo_url: https://github.com/clang-retro/picolibc
+repo_name: clang-retro/picolibc
+edit_uri: ""
+copyright: Copyright &copy; clang-retro contributors &middot; picolibc's licenses (BSD)
+hooks:
+  - .docs/hooks.py
+
+extra:
+  retro:
+    doxygen: clang-retro-docs/.docs/Doxyfile
+    root: ..
+    github: clang-retro/picolibc
+    branch: main
+    pages:
+      libos/msdos/README.md: msdos.md
+      libos/amigaos/README.md: amigaos.md
+      libos/tos/README.md: tos.md
+      libos/win32/README.md: win32.md
+
+nav:
+  - Home: index.md
+  - MS-DOS and 16-bit Windows: msdos.md
+  - OS/2: os2.md
+  - 32-bit Windows: win32.md
+  - AmigaOS: amigaos.md
+  - Atari TOS: tos.md
+  - Building: building.md
+  - API reference: api/index.html
+  - All clang-retro projects: https://clang-retro.github.io/

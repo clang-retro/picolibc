@@ -1,0 +1,12 @@
+# The API reference of the documentation site (api/), run by .docs/hooks.py
+# from the repository's root after `mkdocs build`.
+@INCLUDE               = clang-retro-docs/.docs/Doxyfile.base
+PROJECT_NAME           = "clang-retro picolibc"
+PROJECT_BRIEF          = "The system layers: DOS, OS/2, Win32, AmigaOS and TOS"
+INPUT                  = libos/msdos \
+                         libos/os2 \
+                         libos/win32 \
+                         libos/amigaos \
+                         libos/tos
+FILE_PATTERNS          = *.h *.c *.S
+OPTIMIZE_OUTPUT_FOR_C  = YES
