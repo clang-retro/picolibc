@@ -41,69 +41,10 @@
 
 /*
  * The startup code (crt0.S) keeps where OS/2 put the environment and the
- * command line, then calls __os2_start.
- *
- * The environment is NAME=value strings, each ending with a NUL, and an
- * empty string. The command line is the program name, a NUL, the
- * arguments, and two NULs.
+ * command line (see env.c), then calls __os2_start.
  */
 
-typedef const char __OS2_FAR *fstr;
-
-fstr                          __os2_env;
-fstr                          __os2_cmdline;
-char                        **environ;
-
-extern int                    main(int, char **, char **);
-
-#ifndef __i386__
-extern char     __heap_start[];
-extern uint16_t __os2_stack_top;
-#endif
-
-static size_t
-fstrlen(fstr s)
-{
-    size_t n = 0;
-    while (s[n])
-        n++;
-    return n;
-}
-
-/* A copy of a far string, in the C library's memory. */
-static char *
-fdup(fstr s, size_t n)
-{
-    char *d = malloc(n + 1);
-    if (!d)
-        _exit(255);
-    for (size_t i = 0; i < n; i++)
-        d[i] = s[i];
-    d[n] = '\0';
-    return d;
-}
-
-static void
-init_environ(void)
-{
-    static char *empty[1];
-    environ = empty;
-    if (!__os2_env)
-        return;
-    size_t count = 0;
-    for (fstr p = __os2_env; *p; p += fstrlen(p) + 1)
-        count++;
-    char **env = malloc((count + 1) * sizeof(char *));
-    if (!env)
-        return;
-    size_t i = 0;
-    for (fstr p = __os2_env; *p; p += fstrlen(p) + 1) {
-        size_t n = fstrlen(p);
-        env[i++] = fdup(p, n);
-    }
-    env[i] = NULL;
-    environ = env;
-}
+extern int main(int, char **, char **);
 
 /* Splits the arguments into words, as the OS/2 C compilers do: blanks
  * separate them, double quotes group them, and \" is a quote. With argv
@@ -148,41 +89,19 @@ void
 __os2_start(void)
 {
 #ifndef __i386__
-    /* 1.x: the heap. */
-#if defined(__COMPACT__) || defined(__LARGE__)
-    __os2_word sel;
-    if (DosAllocSeg(0, &sel, 0) == 0) {
-        __os2_heap_base = __os2_brk = (char *)((uint32_t)sel << 16);
-        __os2_heap_end = __os2_brk + 0xfff0;
-    }
-#else
-    /* DGROUP grows to 64 KiB; the heap is its end. */
-    unsigned short ds;
-    __asm__("movw %%ds, %0" : "=r"(ds));
-    /* The heap starts after the stack, whose size the linker's option
-     * stack sets. */
-    char *start = __heap_start;
-    if (__os2_stack_top > (uint16_t)(uintptr_t)start)
-        start = (char *)(uintptr_t)__os2_stack_top;
-    __os2_heap_base = __os2_brk = start;
-    if (DosReallocSeg(0, ds) == 0)
-        __os2_heap_end = (char *)0xfff0;
-    else
-        __os2_heap_end = start;
+    __os2_init_heap();
 #endif
-#endif
-
-    init_environ();
+    __os2_init_environ();
 
     int    argc = 0;
     char **argv;
     char  *args = NULL;
     char  *prog = (char *)"";
     if (__os2_cmdline) {
-        size_t n = fstrlen(__os2_cmdline);
-        prog = fdup(__os2_cmdline, n);
-        fstr a = __os2_cmdline + n + 1;
-        args = fdup(a, fstrlen(a));
+        size_t n = __os2_fstrlen(__os2_cmdline);
+        prog = __os2_fdup(__os2_cmdline, n);
+        __os2_fstr a = __os2_cmdline + n + 1;
+        args = __os2_fdup(a, __os2_fstrlen(a));
     }
     argc = 1 + (args ? split(NULL, NULL, args) : 0);
     argv = malloc((argc + 1) * sizeof(char *) + (args ? strlen(args) + 1 : 0));

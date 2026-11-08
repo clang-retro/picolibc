@@ -77,6 +77,38 @@ init_heap(void)
 }
 #endif
 
+#ifndef __i386__
+extern char     __heap_start[];
+extern uint16_t __os2_stack_top;
+
+/* Called by the startup code of programs and DLLs. */
+void
+__os2_init_heap(void)
+{
+#if defined(__COMPACT__) || defined(__LARGE__)
+    __os2_word sel;
+    if (DosAllocSeg(0, &sel, 0) == 0) {
+        __os2_heap_base = __os2_brk = (char *)((uint32_t)sel << 16);
+        __os2_heap_end = __os2_brk + 0xfff0;
+    }
+#else
+    /* DGROUP grows to 64 KiB; the heap is its end. */
+    unsigned short ds;
+    __asm__("movw %%ds, %0" : "=r"(ds));
+    /* The heap starts after the stack, whose size the linker's option
+     * stack sets. A DLL has no stack (__os2_stack_top is 0). */
+    char *start = __heap_start;
+    if (__os2_stack_top > (uint16_t)(uintptr_t)start)
+        start = (char *)(uintptr_t)__os2_stack_top;
+    __os2_heap_base = __os2_brk = start;
+    if (DosReallocSeg(0, ds) == 0)
+        __os2_heap_end = (char *)0xfff0;
+    else
+        __os2_heap_end = start;
+#endif
+}
+#endif
+
 void *
 sbrk(ptrdiff_t incr)
 {
