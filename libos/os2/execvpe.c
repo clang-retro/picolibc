@@ -40,7 +40,7 @@
 /* execve, with the program looked for in the current directory and the
    PATH (which OS/2 separates with semicolons). */
 int
-execvpe(const char *file, char *const argv[], char *const envp[])
+execvpe(const char *file, char * const argv[], char * const envp[])
 {
     return spawnvpe(P_OVERLAY, file, argv, envp);
 }

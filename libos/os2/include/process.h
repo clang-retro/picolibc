@@ -56,10 +56,10 @@ int spawnl(int mode, const char *path, const char *arg0, ...);
 int spawnle(int mode, const char *path, const char *arg0, ...);
 int spawnlp(int mode, const char *file, const char *arg0, ...);
 int spawnlpe(int mode, const char *file, const char *arg0, ...);
-int spawnv(int mode, const char *path, char *const argv[]);
-int spawnve(int mode, const char *path, char *const argv[], char *const envp[]);
-int spawnvp(int mode, const char *file, char *const argv[]);
-int spawnvpe(int mode, const char *file, char *const argv[], char *const envp[]);
+int spawnv(int mode, const char *path, char * const argv[]);
+int spawnve(int mode, const char *path, char * const argv[], char * const envp[]);
+int spawnvp(int mode, const char *file, char * const argv[]);
+int spawnvpe(int mode, const char *file, char * const argv[], char * const envp[]);
 
 _END_STD_C
 

@@ -163,7 +163,7 @@ __os2_ret DosExecPgm(char *, long, __os2_word, __os2_psz, __os2_psz, struct __os
 __os2_ret DosWaitChild(__os2_word, __os2_word, struct __os2_resultcodes *, __os2_word *,
                        __os2_word);
 __os2_ret DosSearchPath(__os2_word, __os2_psz, __os2_psz, char *, __os2_word);
-#define __os2_cwait(s, w, r, p, i) DosWaitChild(s, w, r, p, i)
+#define __os2_cwait(s, w, r, p, i)     DosWaitChild(s, w, r, p, i)
 #define __os2_delete(p)                DosDelete(p)
 #define __os2_move(f, t)               DosMove(f, t)
 #define __os2_mkdir(p)                 DosCreateDir(p, 0)
@@ -216,7 +216,7 @@ __os2_ret __OS2_API DosExecPgm(char __far *, short, __os2_word, __os2_psz, __os2
 __os2_ret __OS2_API DosCwait(__os2_word, __os2_word, struct __os2_resultcodes __far *,
                              __os2_word __far *, __os2_word);
 __os2_ret __OS2_API DosSearchPath(__os2_word, __os2_psz, __os2_psz, char __far *, __os2_word);
-#define __os2_cwait(s, w, r, p, i) DosCwait(s, w, r, p, i)
+#define __os2_cwait(s, w, r, p, i)     DosCwait(s, w, r, p, i)
 #define __os2_delete(p)                DosDelete(p, 0)
 #define __os2_move(f, t)               DosMove(f, t, 0)
 #define __os2_mkdir(p)                 DosMkDir(p, 0)
@@ -266,10 +266,10 @@ char            **__win16_frame_pointer_address(void);
 #endif
 
 /* Programs (process.c). */
-int __os2_spawnve(int mode, const char *path, char *const argv[], char *const envp[]);
-int __os2_spawn_line(int mode, const char *path, const char *name, const char *line,
-                     char *const envp[]);
-int __os2_find_program(char *buf, size_t size, const char *name, int search);
+int  __os2_spawnve(int mode, const char *path, char  *const argv[], char  *const envp[]);
+int  __os2_spawn_line(int mode, const char *path, const char *name, const char *line,
+                      char  *const envp[]);
+int  __os2_find_program(char *buf, size_t size, const char *name, int search);
 
 int  __os2_error(unsigned code);
 int  __os2_isdev(int fd);

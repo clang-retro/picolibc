@@ -40,7 +40,7 @@
 /* OS/2 has no exec: the program runs, and this one exits with its exit
    code (spawnve with P_OVERLAY). Returns only when it could not start. */
 int
-execve(const char *path, char *const argv[], char *const envp[])
+execve(const char *path, char * const argv[], char * const envp[])
 {
     return spawnve(P_OVERLAY, path, argv, envp);
 }

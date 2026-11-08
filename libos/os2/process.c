@@ -55,7 +55,7 @@
 
 /* Bytes argv takes as a command line, after the program name. */
 static size_t
-args_size(char *const argv[])
+args_size(char * const argv[])
 {
     size_t n = 2;
     for (size_t i = 1; argv[i]; i++) {
@@ -67,7 +67,7 @@ args_size(char *const argv[])
 }
 
 static char *
-put_args(char *d, char *const argv[])
+put_args(char *d, char * const argv[])
 {
     for (size_t i = 1; argv[i]; i++) {
         const char *s = argv[i];
@@ -130,7 +130,7 @@ __os2_find_program(char *buf, size_t size, const char *name, int search)
 /* Runs PATH with the command line ARGS (the program's name, a NUL, the
    arguments, two NULs) and the environment ENVP. */
 static int
-exec(int mode, const char *path, const char *args, char *const envp[])
+exec(int mode, const char *path, const char *args, char * const envp[])
 {
     if (mode != P_WAIT && mode != P_NOWAIT && mode != P_OVERLAY) {
         errno = EINVAL;
@@ -178,7 +178,7 @@ exec(int mode, const char *path, const char *args, char *const envp[])
 /* The command line: NAME, a NUL, ARGS as they are, two NULs. */
 int
 __os2_spawn_line(int mode, const char *path, const char *name, const char *line,
-                 char *const envp[])
+                 char * const envp[])
 {
     size_t n = strlen(name) + 1, m = strlen(line);
     char  *args = malloc(n + m + 2);
@@ -195,9 +195,9 @@ __os2_spawn_line(int mode, const char *path, const char *name, const char *line,
 }
 
 int
-__os2_spawnve(int mode, const char *path, char *const argv[], char *const envp[])
+__os2_spawnve(int mode, const char *path, char * const argv[], char * const envp[])
 {
-    static char *const noargs[] = { NULL, NULL };
+    static char * const noargs[] = { NULL, NULL };
     if (!argv || !argv[0])
         argv = noargs;
     const char *name = argv[0] ? argv[0] : path;
@@ -216,7 +216,7 @@ __os2_spawnve(int mode, const char *path, char *const argv[], char *const envp[]
 }
 
 static int
-spawn(int mode, const char *name, char *const argv[], char *const envp[], int search)
+spawn(int mode, const char *name, char * const argv[], char * const envp[], int search)
 {
     char path[260];
     if (__os2_find_program(path, sizeof(path), name, search) < 0)
@@ -225,25 +225,25 @@ spawn(int mode, const char *name, char *const argv[], char *const envp[], int se
 }
 
 int
-spawnv(int mode, const char *path, char *const argv[])
+spawnv(int mode, const char *path, char * const argv[])
 {
     return spawn(mode, path, argv, NULL, 0);
 }
 
 int
-spawnve(int mode, const char *path, char *const argv[], char *const envp[])
+spawnve(int mode, const char *path, char * const argv[], char * const envp[])
 {
     return spawn(mode, path, argv, envp, 0);
 }
 
 int
-spawnvp(int mode, const char *file, char *const argv[])
+spawnvp(int mode, const char *file, char * const argv[])
 {
     return spawn(mode, file, argv, NULL, 1);
 }
 
 int
-spawnvpe(int mode, const char *file, char *const argv[], char *const envp[])
+spawnvpe(int mode, const char *file, char * const argv[], char * const envp[])
 {
     return spawn(mode, file, argv, envp, 1);
 }
@@ -267,8 +267,8 @@ spawnl_(int mode, const char *name, const char *arg0, va_list ap, int env, int s
     argv[0] = (char *)arg0;
     for (size_t i = 1; i <= n; i++)
         argv[i] = va_arg(ap, char *);
-    char *const *envp = env ? va_arg(ap, char *const *) : NULL;
-    int          r = spawn(mode, name, argv, envp, search);
+    char * const *envp = env ? va_arg(ap, char * const *) : NULL;
+    int           r = spawn(mode, name, argv, envp, search);
     free(argv);
     return r;
 }
@@ -320,17 +320,17 @@ waitpid(pid_t pid, int *status, int options)
     struct __os2_resultcodes rc;
     __os2_word               got;
     /* DCWA_PROCESS; DCWW_NOWAIT or DCWW_WAIT. Process id 0 is any child. */
-    __os2_ret r = __os2_cwait(0, (options & WNOHANG) ? 1 : 0, &rc, &got,
-                              (__os2_word)(pid > 0 ? pid : 0));
+    __os2_ret                r
+        = __os2_cwait(0, (options & WNOHANG) ? 1 : 0, &rc, &got, (__os2_word)(pid > 0 ? pid : 0));
     if (r == 129) /* ERROR_CHILD_NOT_COMPLETE */
         return 0;
     if (r)
         return __os2_error(r);
     if (status) {
         static const unsigned char sig[] = { 0, 1 /* SIGHUP */, 11 /* SIGSEGV */, 9 /* SIGKILL */ };
-        *status = rc.code == 0  ? (int)(rc.result & 0xff) << 8
-                  : rc.code < 4 ? sig[rc.code]
-                                : 6 /* SIGABRT */;
+        *status = rc.code == 0 ? (int)(rc.result & 0xff) << 8
+            : rc.code < 4      ? sig[rc.code]
+                               : 6 /* SIGABRT */;
     }
     return (pid_t)got;
 }
