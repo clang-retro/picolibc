@@ -38,22 +38,24 @@
 #include <stdlib.h>
 #include <string.h>
 
-/*
- * The command processor runs the command: COMSPEC, or CMD.EXE from the
- * PATH, with /c. The result is its status, as waitpid gives it.
- */
+/* The command processor: COMSPEC, or CMD.EXE from the PATH. */
 int
-system(const char *command)
+__os2_find_shell(char *buf, size_t size, const char **shell)
 {
-    const char *shell = getenv("COMSPEC");
+    *shell = getenv("COMSPEC");
+    if (!*shell || !**shell)
+        *shell = "CMD.EXE";
+    return __os2_find_program(buf, size, *shell, 1);
+}
+
+/* Starts the command processor with /c and COMMAND, as it is. */
+int
+__os2_shell(int mode, const char *command)
+{
+    const char *shell;
     char        path[260];
-    if (!shell || !*shell)
-        shell = "CMD.EXE";
-    if (__os2_find_program(path, sizeof(path), shell, 1) < 0)
-        return command ? -1 : 0;
-    if (!command)
-        return 1;
-    /* The command goes to the shell as it is. */
+    if (__os2_find_shell(path, sizeof(path), &shell) < 0)
+        return -1;
     char *line = malloc(strlen(command) + 4);
     if (!line) {
         errno = ENOMEM;
@@ -61,7 +63,20 @@ system(const char *command)
     }
     strcpy(line, "/c ");
     strcat(line, command);
-    int r = __os2_spawn_line(P_WAIT, path, shell, line, NULL);
+    int r = __os2_spawn_line(mode, path, shell, line, NULL);
     free(line);
+    return r;
+}
+
+/* The result is the shell's status, as waitpid gives it. */
+int
+system(const char *command)
+{
+    if (!command) {
+        const char *shell;
+        char        path[260];
+        return __os2_find_shell(path, sizeof(path), &shell) == 0;
+    }
+    int r = __os2_shell(P_WAIT, command);
     return r < 0 ? (errno == EINTR ? 9 /* SIGKILL */ : -1) : (r & 0xff) << 8;
 }

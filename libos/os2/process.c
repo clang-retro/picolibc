@@ -102,7 +102,7 @@ add_exe(char *buf, size_t size, const char *name)
         return -1;
     }
     memcpy(buf, name, n);
-    memcpy(buf + n, ".EXE", ext ? 5 : 1);
+    memcpy(buf + n, ext ? ".EXE" : "", ext ? 5 : 1);
     return 0;
 }
 

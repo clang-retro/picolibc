@@ -163,6 +163,13 @@ __os2_ret DosExecPgm(char *, long, __os2_word, __os2_psz, __os2_psz, struct __os
 __os2_ret DosWaitChild(__os2_word, __os2_word, struct __os2_resultcodes *, __os2_word *,
                        __os2_word);
 __os2_ret DosSearchPath(__os2_word, __os2_psz, __os2_psz, char *, __os2_word);
+__os2_ret DosCreatePipe(__os2_handle *, __os2_handle *, __os2_word);
+__os2_ret DosDupHandle(__os2_handle, __os2_handle *);
+__os2_ret DosQueryFHState(__os2_handle, __os2_word *);
+__os2_ret DosSetFHState(__os2_handle, __os2_word);
+#define __os2_pipe(r, w, n)            DosCreatePipe(r, w, n)
+#define __os2_getfhstate(h, s)         DosQueryFHState(h, s)
+#define __os2_setfhstate(h, s)         DosSetFHState(h, s)
 #define __os2_cwait(s, w, r, p, i)     DosWaitChild(s, w, r, p, i)
 #define __os2_delete(p)                DosDelete(p)
 #define __os2_move(f, t)               DosMove(f, t)
@@ -216,6 +223,13 @@ __os2_ret __OS2_API DosExecPgm(char __far *, short, __os2_word, __os2_psz, __os2
 __os2_ret __OS2_API DosCwait(__os2_word, __os2_word, struct __os2_resultcodes __far *,
                              __os2_word __far *, __os2_word);
 __os2_ret __OS2_API DosSearchPath(__os2_word, __os2_psz, __os2_psz, char __far *, __os2_word);
+__os2_ret __OS2_API DosMakePipe(__os2_handle __far *, __os2_handle __far *, __os2_word);
+__os2_ret __OS2_API DosDupHandle(__os2_handle, __os2_handle __far *);
+__os2_ret __OS2_API DosQFHandState(__os2_handle, __os2_word __far *);
+__os2_ret __OS2_API DosSetFHandState(__os2_handle, __os2_word);
+#define __os2_pipe(r, w, n)            DosMakePipe(r, w, n)
+#define __os2_getfhstate(h, s)         DosQFHandState(h, s)
+#define __os2_setfhstate(h, s)         DosSetFHandState(h, s)
 #define __os2_cwait(s, w, r, p, i)     DosCwait(s, w, r, p, i)
 #define __os2_delete(p)                DosDelete(p, 0)
 #define __os2_move(f, t)               DosMove(f, t, 0)
@@ -270,6 +284,11 @@ int  __os2_spawnve(int mode, const char *path, char  *const argv[], char  *const
 int  __os2_spawn_line(int mode, const char *path, const char *name, const char *line,
                       char  *const envp[]);
 int  __os2_find_program(char *buf, size_t size, const char *name, int search);
+int  __os2_find_shell(char *buf, size_t size, const char **shell);
+int  __os2_shell(int mode, const char *command);
+
+/* Handles (pipe.c): whether a child process gets a copy of FD. */
+int  __os2_inherit(int fd, int inherit);
 
 int  __os2_error(unsigned code);
 int  __os2_isdev(int fd);

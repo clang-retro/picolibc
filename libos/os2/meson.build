@@ -25,6 +25,8 @@ srcs_os_os2 = [
   'files.c',
   'getcwd.c',
   'getpid.c',
+  'pipe.c',
+  'popen.c',
   'process.c',
   'read.c',
   'sbrk.c',
