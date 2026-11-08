@@ -88,6 +88,14 @@ __os2_error(unsigned code)
     case 112: /* ERROR_DISK_FULL */
         e = ENOSPC;
         break;
+    case 128: /* ERROR_WAIT_NO_CHILDREN */
+        e = ECHILD;
+        break;
+    case 190: /* ERROR_INVALID_MODULETYPE */
+    case 191: /* ERROR_INVALID_EXE_SIGNATURE */
+    case 193: /* ERROR_BAD_EXE_FORMAT */
+        e = ENOEXEC;
+        break;
     case 123: /* ERROR_INVALID_NAME */
     case 206: /* ERROR_FILENAME_EXCED_RANGE */
         e = ENAMETOOLONG;

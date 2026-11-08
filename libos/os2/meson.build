@@ -19,13 +19,17 @@ srcs_os_os2 = [
   'dllstart.c',
   'env.c',
   'error.c',
+  'execve.c',
+  'execvpe.c',
   'fd.c',
   'files.c',
   'getcwd.c',
   'getpid.c',
+  'process.c',
   'read.c',
   'sbrk.c',
   'start.c',
+  'system.c',
   'time.c',
   'write.c',
 ]
@@ -43,6 +47,11 @@ srcs_os_os2_fallback = [
 srcs_libos += srcs_os_os2 + srcs_os_os2_fallback
 
 src_os_os2 = files(srcs_os_os2)
+
+# process.h: spawn and its P_ modes.
+if really_install
+  install_headers('include/process.h', install_dir: include_dir)
+endif
 
 # On i8086 the compiler calls the integer (__i_printf) and long
 # (__l_printf) variants of printf and scanf when the format allows; they
