@@ -82,6 +82,31 @@ struct __os2_filestatus {
     __os2_word     attr;
 };
 
+/* FILEFINDBUF3 (2.x, level 1) and FILEFINDBUF (1.x), with room for a
+   256-byte name. */
+#ifdef __i386__
+struct __os2_findbuf {
+    unsigned long  next;
+    unsigned short cdate, ctime, adate, atime, wdate, wtime;
+    unsigned long  size, alloc, attr;
+    unsigned char  namelen;
+    char           name[256];
+};
+#else
+struct __os2_findbuf {
+    unsigned short cdate, ctime, adate, atime, wdate, wtime;
+    unsigned long  size, alloc;
+    unsigned short attr;
+    unsigned char  namelen;
+    char           name[256];
+};
+#endif
+
+/* The process and thread ids, 1.x (DosGetPID). */
+struct __os2_pidinfo {
+    unsigned short pid, tid, ppid;
+};
+
 #define __OS2_FILE_READONLY  0x01
 #define __OS2_FILE_DIRECTORY 0x10
 
@@ -119,17 +144,29 @@ __os2_ret DosGetDateTime(struct __os2_datetime *);
 __os2_ret DosAllocMem(void **, unsigned long, unsigned long);
 __os2_ret DosSetMem(void *, unsigned long, unsigned long);
 __os2_ret DosSleep(unsigned long);
-#define __os2_delete(p)        DosDelete(p)
-#define __os2_move(f, t)       DosMove(f, t)
-#define __os2_mkdir(p)         DosCreateDir(p, 0)
-#define __os2_rmdir(p)         DosDeleteDir(p)
-#define __os2_chdir(p)         DosSetCurrentDir(p)
-#define __os2_seek(h, d, m, p) DosSetFilePtr(h, d, m, p)
-#define __os2_htype(h, t, a)   DosQueryHType(h, t, a)
-#define __os2_pathinfo(p, b)   DosQueryPathInfo(p, 1, b, sizeof(*(b)))
-#define __os2_fileinfo(h, b)   DosQueryFileInfo(h, 1, b, sizeof(*(b)))
-#define __os2_truncate(h, s)   DosSetFileSize(h, s)
-#define __os2_sleep(ms)        DosSleep(ms)
+__os2_ret DosFindFirst(__os2_psz, __os2_handle *, __os2_word, void *, __os2_word, __os2_word *,
+                       __os2_word);
+__os2_ret DosFindNext(__os2_handle, void *, __os2_word, __os2_word *);
+__os2_ret DosFindClose(__os2_handle);
+__os2_ret DosQueryCurrentDisk(__os2_word *, unsigned long *);
+__os2_ret DosQueryCurrentDir(__os2_word, char *, __os2_word *);
+__os2_ret DosGetInfoBlocks(void **, void **);
+#define __os2_delete(p)                DosDelete(p)
+#define __os2_move(f, t)               DosMove(f, t)
+#define __os2_mkdir(p)                 DosCreateDir(p, 0)
+#define __os2_rmdir(p)                 DosDeleteDir(p)
+#define __os2_chdir(p)                 DosSetCurrentDir(p)
+#define __os2_seek(h, d, m, p)         DosSetFilePtr(h, d, m, p)
+#define __os2_htype(h, t, a)           DosQueryHType(h, t, a)
+#define __os2_pathinfo(p, b)           DosQueryPathInfo(p, 1, b, sizeof(*(b)))
+#define __os2_fileinfo(h, b)           DosQueryFileInfo(h, 1, b, sizeof(*(b)))
+#define __os2_truncate(h, s)           DosSetFileSize(h, s)
+#define __os2_sleep(ms)                DosSleep(ms)
+#define __os2_findfirst(p, h, a, b, n) DosFindFirst(p, h, a, b, sizeof(*(b)), n, 1)
+#define __os2_findnext(h, b, n)        DosFindNext(h, b, sizeof(*(b)), n)
+#define __os2_findclose(h)             DosFindClose(h)
+#define __os2_curdisk(d, m)            DosQueryCurrentDisk(d, m)
+#define __os2_curdir(d, b, n)          DosQueryCurrentDir(d, b, n)
 #else
 /* DOSCALLS, 16-bit */
 void __OS2_API      DosExit(__os2_word, __os2_word);
@@ -152,18 +189,30 @@ __os2_ret __OS2_API DosGetDateTime(struct __os2_datetime __far *);
 __os2_ret __OS2_API DosAllocSeg(__os2_word, __os2_word __far *, __os2_word);
 __os2_ret __OS2_API DosReallocSeg(__os2_word, __os2_word);
 __os2_ret __OS2_API DosSleep(unsigned long);
-#define __os2_delete(p)        DosDelete(p, 0)
-#define __os2_move(f, t)       DosMove(f, t, 0)
-#define __os2_mkdir(p)         DosMkDir(p, 0)
-#define __os2_rmdir(p)         DosRmDir(p, 0)
-#define __os2_chdir(p)         DosChDir(p, 0)
-#define __os2_seek(h, d, m, p) DosChgFilePtr(h, d, m, p)
-#define __os2_htype(h, t, a)   DosQHandType(h, t, a)
+__os2_ret __OS2_API DosFindFirst(__os2_psz, __os2_handle __far *, __os2_word, void __far *,
+                                 __os2_word, __os2_word __far *, unsigned long);
+__os2_ret __OS2_API DosFindNext(__os2_handle, void __far *, __os2_word, __os2_word __far *);
+__os2_ret __OS2_API DosFindClose(__os2_handle);
+__os2_ret __OS2_API DosQCurDisk(__os2_word __far *, unsigned long __far *);
+__os2_ret __OS2_API DosQCurDir(__os2_word, char __far *, __os2_word __far *);
+__os2_ret __OS2_API DosGetPID(struct __os2_pidinfo __far *);
+#define __os2_delete(p)                DosDelete(p, 0)
+#define __os2_move(f, t)               DosMove(f, t, 0)
+#define __os2_mkdir(p)                 DosMkDir(p, 0)
+#define __os2_rmdir(p)                 DosRmDir(p, 0)
+#define __os2_chdir(p)                 DosChDir(p, 0)
+#define __os2_seek(h, d, m, p)         DosChgFilePtr(h, d, m, p)
+#define __os2_htype(h, t, a)           DosQHandType(h, t, a)
 /* FILESTATUS has a 16-bit attribute word. */
-#define __os2_pathinfo(p, b)   DosQPathInfo(p, 1, b, 22, 0)
-#define __os2_fileinfo(h, b)   DosQFileInfo(h, 1, b, 22)
-#define __os2_truncate(h, s)   DosNewSize(h, s)
-#define __os2_sleep(ms)        DosSleep(ms)
+#define __os2_pathinfo(p, b)           DosQPathInfo(p, 1, b, 22, 0)
+#define __os2_fileinfo(h, b)           DosQFileInfo(h, 1, b, 22)
+#define __os2_truncate(h, s)           DosNewSize(h, s)
+#define __os2_sleep(ms)                DosSleep(ms)
+#define __os2_findfirst(p, h, a, b, n) DosFindFirst(p, h, a, b, sizeof(*(b)), n, 0)
+#define __os2_findnext(h, b, n)        DosFindNext(h, b, sizeof(*(b)), n)
+#define __os2_findclose(h)             DosFindClose(h)
+#define __os2_curdisk(d, m)            DosQCurDisk(d, m)
+#define __os2_curdir(d, b, n)          DosQCurDir(d, b, n)
 #endif
 
 /* Most bytes one DosRead or DosWrite moves. */
