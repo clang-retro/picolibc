@@ -30,7 +30,7 @@ jobs:
     outputs:
       pages: ${{ steps.pages.outputs.enabled }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           sparse-checkout-cone-mode: false
           sparse-checkout: |
