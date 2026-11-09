@@ -61,7 +61,7 @@ jobs:
           else
             echo "::notice::GitHub Pages is not set to deploy from GitHub Actions in this repository, so the site is built but not published."
           fi
-      - uses: actions/upload-pages-artifact@v3
+      - uses: actions/upload-pages-artifact@v5
         if: steps.pages.outputs.enabled == 'true'
         with:
           path: clang-retro-docs/site
