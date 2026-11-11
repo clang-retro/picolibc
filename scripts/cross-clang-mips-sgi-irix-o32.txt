@@ -1,0 +1,18 @@
+# SGI IRIX (o32 ABI) on MIPS, for static programs, built with the
+# clang-retro LLVM toolchain (https://github.com/clang-retro/llvm). The
+# library is PIC, like everything on IRIX, so it links with code built
+# with clang's defaults.
+[binaries]
+c = ['clang', '--target=mips-sgi-irix', '-mabi=32', '-march=mips2', '-nostdlib']
+ar = 'llvm-ar'
+nm = 'llvm-nm'
+strip = 'llvm-strip'
+
+[host_machine]
+system = 'irix'
+cpu_family = 'mips'
+cpu = 'mips2'
+endian = 'big'
+
+[properties]
+skip_sanity_check = true

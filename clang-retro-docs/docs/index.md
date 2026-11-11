@@ -8,7 +8,7 @@ hide:
 This is [picolibc](https://github.com/picolibc/picolibc), the C library
 for small systems, with the system layers that make it the C library of
 every clang-retro target: MS-DOS and 16-bit Windows, OS/2, 32-bit
-Windows, AmigaOS and Atari TOS. These pages describe only what the fork
+Windows, AmigaOS, Atari TOS and SGI IRIX. These pages describe only what the fork
 adds; for the library itself see [picolibc's own
 documentation](https://github.com/picolibc/picolibc/tree/main/doc).
 
@@ -46,6 +46,13 @@ documentation](https://github.com/picolibc/picolibc/tree/main/doc).
     ---
 
     GEMDOS startup code, memory, files, directories and time.
+
+-   :material-alpha-i-box: **[SGI IRIX](irix.md)**
+
+    ---
+
+    Static programs for IRIX 5.3 and 6.x on MIPS, in the o32, n32 and
+    64-bit ABIs.
 
 -   :material-hammer-wrench: **[Building](building.md)**
 
