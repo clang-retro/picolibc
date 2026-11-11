@@ -294,12 +294,12 @@
 #if defined(__MACH__) && defined(__clang__)
 /* Mach-O has no alias attribute; give the alias the symbol's address in
  * assembly instead (C symbols get a leading underscore there). */
-#define __strong_reference(sym, aliassym)                                   \
-    extern __typeof(sym) aliassym;                                          \
-    __asm__(".globl _" __STRING(aliassym));                                 \
+#define __strong_reference(sym, aliassym)                    \
+    extern __typeof(sym) aliassym;                           \
+    __asm__(".globl _" __STRING(aliassym));                  \
     __asm__(".set _" __STRING(aliassym) ", _" __STRING(sym))
-#define __strong_reference_dup(sym, aliassym)                               \
-    __asm__(".globl _" __STRING(aliassym));                                 \
+#define __strong_reference_dup(sym, aliassym)                \
+    __asm__(".globl _" __STRING(aliassym));                  \
     __asm__(".set _" __STRING(aliassym) ", _" __STRING(sym))
 #elif __has_attribute(__alias__)
 #define __strong_reference(sym, aliassym)                                   \
