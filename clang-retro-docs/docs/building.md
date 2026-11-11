@@ -9,6 +9,7 @@ Each system layer is a meson option, off by default:
 | `-Dos-win32=true` | `libos/win32`: 32-bit Windows | `cross-clang-i386-windows.txt` |
 | `-Dos-amigaos=true` | `libos/amigaos`: AmigaOS | `cross-clang-m68k-amigaos.txt` |
 | `-Dos-tos=true` | `libos/tos`: Atari TOS | `cross-clang-m68k-atari-tos.txt` |
+| `-Dos-irix=true` | `libos/irix`: SGI IRIX, static programs | `cross-clang-mips-sgi-irix-o32.txt`, `-n32.txt`, `-n64.txt` |
 
 The 16-bit models are `tiny`, `small`, `medium`, `compact`, `large`,
 `huge` and `huge16` for DOS, and `small` to `large` for Windows and OS/2.

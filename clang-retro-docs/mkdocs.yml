@@ -24,6 +24,7 @@ extra:
       libos/amigaos/README.md: amigaos.md
       libos/tos/README.md: tos.md
       libos/win32/README.md: win32.md
+      libos/irix/README.md: irix.md
 
 nav:
   - Home: index.md
@@ -32,6 +33,7 @@ nav:
   - 32-bit Windows: win32.md
   - AmigaOS: amigaos.md
   - Atari TOS: tos.md
+  - SGI IRIX: irix.md
   - Building: building.md
   - API reference: api/index.html
   - All clang-retro projects: https://clang-retro.github.io/
