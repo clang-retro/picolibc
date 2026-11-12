@@ -50,10 +50,10 @@ clang --target=mips64-sgi-irix6.5 -mabi=n32 --sysroot=<sysroot> -static hello.c
   2 for o32 and 3, `stat64`, for n32 and 64), `isatty`, `unlink`,
   `rename`, `mkdir`, `rmdir`, `chdir`, `access`.
 - `sbrk` grows the heap from the end of the bss with `brk`.
-- `getpid`, `kill`, `gettimeofday`, `_exit`.
-- Static constructors and destructors (`.preinit_array`, `.init_array`,
-  `.fini_array`). Signals are those of the
+- `getpid`, `kill`, `gettimeofday`, `_exit`. Signals are those of the
   fallback library: `raise` works.
+- Static constructors and destructors (`.preinit_array`, `.init_array`,
+  `.fini_array`).
 
 ## Limits
 
