@@ -50,6 +50,12 @@ __irix_start(long *sp)
      * ABIs. */
     char **argv = (char **)(sp + 1);
     environ = argv + argc + 1;
-    __libc_init_array();
+    /* lld's default layout gives the preinit and init arrays their own
+     * start and end symbols, not picolibc's __bothinit_array ones, so run
+     * them here rather than with __libc_init_array. */
+    for (void (**fn)(void) = __preinit_array_start; fn != __preinit_array_end; fn++)
+        (*fn)();
+    for (void (**fn)(void) = __init_array_start; fn != __init_array_end; fn++)
+        (*fn)();
     exit(main(argc, argv, environ));
 }
