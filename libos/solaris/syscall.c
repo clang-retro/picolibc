@@ -42,7 +42,7 @@ __solaris_syscall(long n, long a, long b, long c)
     register long o0 __asm__("o0") = a;
     register long o1 __asm__("o1") = b;
     register long o2 __asm__("o2") = c;
-    long err;
+    long          err;
     /* The carry flag says whether the call failed. */
     __asm__ volatile("ta 8\n\t"
                      "addx %%g0, 0, %4"
