@@ -1,0 +1,18 @@
+# Solaris 2.x on 32-bit SPARC, for static programs, built with the
+# clang-retro LLVM toolchain (https://github.com/clang-retro/llvm). The
+# code is for SPARC V8, which runs on every SPARC machine Solaris 2.x
+# supports, from the SPARCstation to the UltraSPARC.
+[binaries]
+c = ['clang', '--target=sparc-sun-solaris', '-mcpu=v8', '-nostdlib']
+ar = 'llvm-ar'
+nm = 'llvm-nm'
+strip = 'llvm-strip'
+
+[host_machine]
+system = 'solaris'
+cpu_family = 'sparc'
+cpu = 'v8'
+endian = 'big'
+
+[properties]
+skip_sanity_check = true

@@ -1,0 +1,60 @@
+/*
+ * SPDX-License-Identifier: BSD-3-Clause
+ *
+ * Copyright © 2026 clang-dos contributors
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions
+ * are met:
+ *
+ * 1. Redistributions of source code must retain the above copyright
+ *    notice, this list of conditions and the following disclaimer.
+ *
+ * 2. Redistributions in binary form must reproduce the above
+ *    copyright notice, this list of conditions and the following
+ *    disclaimer in the documentation and/or other materials provided
+ *    with the distribution.
+ *
+ * 3. Neither the name of the copyright holder nor the names of its
+ *    contributors may be used to endorse or promote products derived
+ *    from this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
+ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ * COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT,
+ * INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+ * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+ * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
+ * STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
+ * OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
+
+#include "local-solaris.h"
+#include <stdlib.h>
+#include <sys/_initfini.h>
+#include <unistd.h>
+
+extern char **environ;
+extern int    main(int, char **, char **);
+void          __solaris_start(long *ap) __attribute__((noreturn, used));
+
+/* ap points at argc, followed by argv[], a null, envp[] and a null. */
+void
+__solaris_start(long *ap)
+{
+    int    argc = (int)ap[0];
+    char **argv = (char **)(ap + 1);
+    environ = argv + argc + 1;
+    /* lld's default layout gives the preinit and init arrays their own
+     * start and end symbols, not picolibc's __bothinit_array ones, so run
+     * them here rather than with __libc_init_array. */
+    for (void (**fn)(void) = __preinit_array_start; fn != __preinit_array_end; fn++)
+        (*fn)();
+    for (void (**fn)(void) = __init_array_start; fn != __init_array_end; fn++)
+        (*fn)();
+    exit(main(argc, argv, environ));
+}

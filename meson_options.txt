@@ -142,6 +142,8 @@ option('os-tos', type: 'boolean', value: false,
        description: 'Include libos/tos in libc: Atari TOS (GEMDOS) startup code and system calls (m68k).')
 option('os-irix', type: 'boolean', value: false,
        description: 'Include libos/irix in libc: SGI IRIX startup code and system calls for static programs (MIPS o32, n32 and 64).')
+option('os-solaris', type: 'boolean', value: false,
+       description: 'Include libos/solaris in libc: Solaris 2.x startup code and system calls for static programs (32-bit SPARC).')
 option('os-os2', type: 'boolean', value: false,
        description: 'Include libos/os2 in libc: OS/2 startup code and system calls (i8086 for OS/2 1.x, i386 for 2.x and later).')
 option('fake-semihost', type: 'boolean', value: true,
