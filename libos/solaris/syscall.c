@@ -36,19 +36,20 @@
 #include "local-solaris.h"
 
 long
-__solaris_syscall(long n, long a, long b, long c)
+__solaris_syscall(long n, long a, long b, long c, long d)
 {
     register long g1 __asm__("g1") = n;
     register long o0 __asm__("o0") = a;
     register long o1 __asm__("o1") = b;
     register long o2 __asm__("o2") = c;
+    register long o3 __asm__("o3") = d;
     long          err;
     /* The carry flag says whether the call failed. */
     __asm__ volatile("ta 8\n\t"
-                     "addx %%g0, 0, %4"
-                     : "+r"(g1), "+r"(o0), "+r"(o1), "+r"(o2), "=r"(err)
+                     "addx %%g0, 0, %5"
+                     : "+r"(g1), "+r"(o0), "+r"(o1), "+r"(o2), "+r"(o3), "=r"(err)
                      :
-                     : "o3", "o4", "o5", "cc", "memory");
+                     : "o4", "o5", "cc", "memory");
     if (err)
         return __solaris_error(o0);
     return o0;
@@ -105,4 +106,26 @@ __solaris_error(long e)
     }
     errno = r;
     return -1;
+}
+
+/*
+ * Solaris 11 has the *at calls in place of open, stat and the others.
+ * sysinfo(SI_RELEASE) gives "5.N", which every Solaris 2.x has.
+ */
+int
+__solaris_use_at(void)
+{
+    static int at = -1;
+    if (at < 0) {
+        char rel[32] = { 0 };
+        at = 0;
+        if (__solaris_call(__SOLARIS_SYS_systeminfo, 3, rel, sizeof(rel) - 1) >= 0 && rel[0] == '5'
+            && rel[1] == '.') {
+            int minor = 0;
+            for (char *p = rel + 2; *p >= '0' && *p <= '9'; p++)
+                minor = minor * 10 + (*p - '0');
+            at = minor >= 11;
+        }
+    }
+    return at;
 }

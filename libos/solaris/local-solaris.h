@@ -48,8 +48,9 @@
  * g1 and the arguments in o0-o5, and "ta 8" traps to the kernel, which
  * returns the result in o0 (and o1). On failure it sets the carry flag
  * and puts the errno value in o0. These are the calls every Solaris from
- * 2.5 to 10 has; Solaris 11 dropped some of them (open, stat and others
- * became openat and fstatat), so these programs don't run there.
+ * 2.5 to 10 has. Solaris 11 dropped some of them (open, stat, unlink and
+ * others) for the *at calls below, which programs use when the kernel says
+ * it is SunOS 5.11 or later (__solaris_use_at).
  */
 
 #define __SOLARIS_SYS_exit         1
@@ -72,14 +73,32 @@
 #define __SOLARIS_SYS_lstat        88
 #define __SOLARIS_SYS_rename       134
 #define __SOLARIS_SYS_gettimeofday 156
+#define __SOLARIS_SYS_systeminfo   139
 
-/* Make system call n with up to three arguments. On failure, sets errno
+/* The *at calls, in Solaris 11 (and illumos). */
+#define __SOLARIS_SYS_faccessat       45
+#define __SOLARIS_SYS_renameat        64
+#define __SOLARIS_SYS_unlinkat        65
+#define __SOLARIS_SYS_fstatat         66
+#define __SOLARIS_SYS_openat          68
+#define __SOLARIS_SYS_mkdirat         102
+
+#define __SOLARIS_AT_FDCWD            ((long)0xffd19553)
+#define __SOLARIS_AT_SYMLINK_NOFOLLOW 0x1000
+#define __SOLARIS_AT_REMOVEDIR        0x1
+
+/* Nonzero on SunOS 5.11 (Solaris 11, illumos) and later. */
+int  __solaris_use_at(void);
+
+/* Make system call n with up to four arguments. On failure, sets errno
  * and returns -1. */
-long __solaris_syscall(long n, long a, long b, long c);
+long __solaris_syscall(long n, long a, long b, long c, long d);
 
 /* Set errno for a Solaris (SVR4) error number; returns -1. */
 long __solaris_error(long e);
 
-#define __solaris_call(n, a, b, c) __solaris_syscall(n, (long)(a), (long)(b), (long)(c))
+#define __solaris_call(n, a, b, c) __solaris_syscall(n, (long)(a), (long)(b), (long)(c), 0)
+#define __solaris_call4(n, a, b, c, d)                               \
+    __solaris_syscall(n, (long)(a), (long)(b), (long)(c), (long)(d))
 
 #endif /* _LOCAL_SOLARIS_H_ */
