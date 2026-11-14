@@ -67,11 +67,20 @@ struct solaris_stat {
     long st_spare[8];
 };
 
+/*
+ * call(arg, &s), or on Solaris 11 fstatat(fd, path, &s, flags): fstatat
+ * takes the same struct stat, and a null path for fstat.
+ */
 static int
-solaris_stat(long call, long arg, struct stat *st)
+solaris_stat(long call, long arg, long fd, const char *path, long flags, struct stat *st)
 {
     struct solaris_stat s;
-    if (__solaris_call(call, arg, &s, 0) < 0)
+    long                r;
+    if (__solaris_use_at())
+        r = __solaris_call4(__SOLARIS_SYS_fstatat, fd, path, &s, flags);
+    else
+        r = __solaris_call(call, arg, &s, 0);
+    if (r < 0)
         return -1;
     memset(st, 0, sizeof(*st));
     st->st_dev = s.st_dev;
@@ -93,19 +102,20 @@ solaris_stat(long call, long arg, struct stat *st)
 int
 stat(const char * restrict path, struct stat * restrict st)
 {
-    return solaris_stat(__SOLARIS_SYS_stat, (long)path, st);
+    return solaris_stat(__SOLARIS_SYS_stat, (long)path, __SOLARIS_AT_FDCWD, path, 0, st);
 }
 
 int
 lstat(const char * restrict path, struct stat * restrict st)
 {
-    return solaris_stat(__SOLARIS_SYS_lstat, (long)path, st);
+    return solaris_stat(__SOLARIS_SYS_lstat, (long)path, __SOLARIS_AT_FDCWD, path,
+                        __SOLARIS_AT_SYMLINK_NOFOLLOW, st);
 }
 
 int
 fstat(int fd, struct stat *st)
 {
-    return solaris_stat(__SOLARIS_SYS_fstat, fd, st);
+    return solaris_stat(__SOLARIS_SYS_fstat, fd, fd, NULL, 0, st);
 }
 
 int

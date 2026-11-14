@@ -75,6 +75,8 @@ open(const char *path, int flags, ...)
         f |= SOLARIS_O_EXCL;
     if (flags & O_NOCTTY)
         f |= SOLARIS_O_NOCTTY;
+    if (__solaris_use_at())
+        return (int)__solaris_call4(__SOLARIS_SYS_openat, __SOLARIS_AT_FDCWD, path, f, mode);
     return (int)__solaris_call(__SOLARIS_SYS_open, path, f, mode);
 }
 
@@ -105,24 +107,34 @@ lseek(int fd, off_t off, int whence)
 int
 unlink(const char *path)
 {
+    if (__solaris_use_at())
+        return (int)__solaris_call(__SOLARIS_SYS_unlinkat, __SOLARIS_AT_FDCWD, path, 0);
     return (int)__solaris_call(__SOLARIS_SYS_unlink, path, 0, 0);
 }
 
 int
 rmdir(const char *path)
 {
+    if (__solaris_use_at())
+        return (int)__solaris_call(__SOLARIS_SYS_unlinkat, __SOLARIS_AT_FDCWD, path,
+                                   __SOLARIS_AT_REMOVEDIR);
     return (int)__solaris_call(__SOLARIS_SYS_rmdir, path, 0, 0);
 }
 
 int
 mkdir(const char *path, mode_t mode)
 {
+    if (__solaris_use_at())
+        return (int)__solaris_call(__SOLARIS_SYS_mkdirat, __SOLARIS_AT_FDCWD, path, mode);
     return (int)__solaris_call(__SOLARIS_SYS_mkdir, path, mode, 0);
 }
 
 int
 rename(const char *from, const char *to)
 {
+    if (__solaris_use_at())
+        return (int)__solaris_call4(__SOLARIS_SYS_renameat, __SOLARIS_AT_FDCWD, from,
+                                    __SOLARIS_AT_FDCWD, to);
     return (int)__solaris_call(__SOLARIS_SYS_rename, from, to, 0);
 }
 
@@ -135,6 +147,8 @@ chdir(const char *path)
 int
 access(const char *path, int mode)
 {
+    if (__solaris_use_at())
+        return (int)__solaris_call4(__SOLARIS_SYS_faccessat, __SOLARIS_AT_FDCWD, path, mode, 0);
     return (int)__solaris_call(__SOLARIS_SYS_access, path, mode, 0);
 }
 
