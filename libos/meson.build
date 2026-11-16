@@ -54,6 +54,10 @@ if get_option('os-msdos')
   subdir('msdos')
 endif
 
+if get_option('os-cpm86')
+  subdir('cpm86')
+endif
+
 if get_option('os-amigaos')
   subdir('amigaos')
 endif

@@ -1,0 +1,19 @@
+# CP/M-86, tiny memory model (the 8080 model), built with the
+# clang-retro LLVM toolchain (https://github.com/clang-retro/llvm). Objects
+# are OMF; programs are linked by a Watcom-style linker (wlink or JWlink)
+# and made CMD files by llvm-exe2cmd.
+[binaries]
+c = ['clang', '--target=i8086-unknown-cpm', '-mcmodel=tiny', '-nostdlib']
+c_ld = '@DIRNAME@/i8086-msdos-ld'
+ar = 'llvm-ar'
+nm = 'llvm-nm'
+strip = 'llvm-strip'
+
+[host_machine]
+system = 'cpm86'
+cpu_family = 'i8086'
+cpu = 'i8086'
+endian = 'little'
+
+[properties]
+skip_sanity_check = true
