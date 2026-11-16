@@ -136,6 +136,8 @@ option('os-msdos', type: 'boolean', value: false,
        description: 'Include libos/msdos in libc: DOS startup code and system calls (i8086).')
 option('os-cpm86', type: 'boolean', value: false,
        description: 'Include libos/cpm86 in libc: CP/M-86 startup code and BDOS system calls (i8086).')
+option('os-cpm80', type: 'boolean', value: false,
+       description: 'Include libos/cpm80 in libc: CP/M-80 startup code and BDOS system calls (Z80 and 8080).')
 option('os-amigaos', type: 'boolean', value: false,
        description: 'Include libos/amigaos in libc: AmigaOS startup code, malloc and system calls (m68k).')
 option('os-win32', type: 'boolean', value: false,

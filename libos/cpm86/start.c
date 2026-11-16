@@ -49,6 +49,25 @@ extern int main(int, char **, char **);
 /* Most arguments a command tail (at most 127 bytes) can hold. */
 #define MAX_ARGS 64
 
+#ifdef __CPM80__
+/* Bytes kept for the stack, below the top of the TPA. */
+#ifndef __CPM80_STACK_SIZE
+#define __CPM80_STACK_SIZE 2048
+#endif
+
+/* The heap runs from the end of the BSS to the stack, which crt0 started
+ * at the top of the TPA: the BDOS entry address in the word at 0006h. */
+static void
+init_heap(void)
+{
+    uint8_t *bp = __cpm_base_page;
+    uint16_t top = bp[6] | ((uint16_t)bp[7] << 8);
+    uint16_t start = (uint16_t)(uintptr_t)__cpm_heap_start;
+    uint16_t room = top > start ? top - start : 0;
+    __cpm_brk = __cpm_heap_start;
+    __cpm_heap_end = __cpm_heap_start + (room > __CPM80_STACK_SIZE ? room - __CPM80_STACK_SIZE : 0);
+}
+#else
 /* The heap runs from the end of the stack to the end of the group that
  * holds the data, as much of 64 KiB as CP/M-86 gave the program: the last
  * offset of the data group (the code group in the 8080 model) is in the
@@ -66,6 +85,7 @@ init_heap(void)
     uint16_t start = (uint16_t)(uintptr_t)__cpm_heap_start;
     __cpm_heap_end = __cpm_heap_start + (end > start ? end - start : 0);
 }
+#endif
 
 /* Split the command tail at 80h into words, as DOS programs do; double
  * quotes group words. The CCP has made it upper case. */
@@ -140,8 +160,8 @@ sbrk(ptrdiff_t incr)
     return old;
 }
 
-/* CP/M-86 Plus keeps a return code for the program, which a submit file
- * can test; CP/M-86 1.1 ignores the call. As in CP/M 3, 0 to FEFFh is
+/* CP/M-86 Plus and CP/M 3 keep a return code for the program, which a
+ * submit file can test; CP/M-86 1.1 and CP/M 2.2 ignore the call. As in CP/M 3, 0 to FEFFh is
  * success and FF00h to FFFEh failure, so a failing status becomes
  * FF00h | status. */
 void

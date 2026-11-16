@@ -76,6 +76,7 @@ endif
 # The DOS layer is part of libc itself.
 src_cpart += get_variable('src_os_msdos', [])
 src_cpart += get_variable('src_os_cpm86', [])
+src_cpart += get_variable('src_os_cpm80', [])
 src_cpart += get_variable('src_os_amigaos', [])
 src_cpart += get_variable('src_os_tos', [])
 src_cpart += get_variable('src_os_irix', [])
