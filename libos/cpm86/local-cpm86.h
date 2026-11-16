@@ -82,9 +82,9 @@ struct __cpm_file {
     uint8_t          flags;
     uint8_t          device;
     struct __cpm_fcb fcb;
-    off_t            pos;     /* byte position */
-    off_t            size;    /* bytes: the end of the file as known */
-    int32_t          bufrec;  /* the record in buf, or -1 */
+    off_t            pos;    /* byte position */
+    off_t            size;   /* bytes: the end of the file as known */
+    int32_t          bufrec; /* the record in buf, or -1 */
     uint8_t          dirty;
     uint8_t          buf[__CPM_RECORD];
 };
@@ -97,37 +97,37 @@ struct __cpm_file {
 #define __CPM_FD_EOF    0x20 /* a text read reached Ctrl-Z */
 #define __CPM_FD_WROTE  0x40 /* written: close updates the directory */
 
-#define __CPM_MAX_FD 16
+#define __CPM_MAX_FD    16
 extern struct __cpm_file *__cpm_fds[__CPM_MAX_FD];
 
 /* The file of a descriptor, or NULL with errno EBADF. */
-struct __cpm_file *__cpm_fd(int fd);
-int                __cpm_new_fd(struct __cpm_file *f);
+struct __cpm_file        *__cpm_fd(int fd);
+int                       __cpm_new_fd(struct __cpm_file *f);
 /* Whether stdio sees fd as a text file (see local-stdio.h). */
-int                __cpm_is_text(int fd);
+int                       __cpm_is_text(int fd);
 
 /* Write out buf if it holds changes. Returns 0 or -1 (errno set). */
-int                __cpm_flush(struct __cpm_file *f);
+int                       __cpm_flush(struct __cpm_file *f);
 /* Make buf hold record rec. Returns 0, 1 past the end of the file, or -1. */
-int                __cpm_load(struct __cpm_file *f, int32_t rec);
+int                       __cpm_load(struct __cpm_file *f, int32_t rec);
 
 /* Console I/O for fds 0 to 2 and the devices. */
-ssize_t            __cpm_dev_read(struct __cpm_file *f, char *buf, size_t n);
-ssize_t            __cpm_dev_write(struct __cpm_file *f, const char *buf, size_t n);
-void               __cpm_conout(uint8_t device, char c);
+ssize_t                   __cpm_dev_read(struct __cpm_file *f, char *buf, size_t n);
+ssize_t                   __cpm_dev_write(struct __cpm_file *f, const char *buf, size_t n);
+void                      __cpm_conout(uint8_t device, char c);
 
 /* The base page, at DS:0000 (crt0 reserves it). */
-extern uint8_t     __cpm_base_page[256] __asm__("___cpm_base_page");
+extern uint8_t            __cpm_base_page[256] __asm__("___cpm_base_page");
 
 /* Heap bounds. crt0 defines __heap_start after the stack. */
-extern char        __cpm_heap_start[] __asm__("___heap_start");
-extern char       *__cpm_brk;
-extern char       *__cpm_heap_end;
+extern char               __cpm_heap_start[] __asm__("___heap_start");
+extern char              *__cpm_brk;
+extern char              *__cpm_heap_end;
 
 /* The BDOS version (function 12), read at startup: 0022h for CP/M-86 1.x,
  * 1031h for CP/M-86 Plus, 1431h for Concurrent CP/M. */
-extern uint16_t    __cpm_version;
+extern uint16_t           __cpm_version;
 
-void               __cpm_start(void);
+void                      __cpm_start(void);
 
 #endif /* _LOCAL_CPM86_H_ */

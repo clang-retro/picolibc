@@ -69,7 +69,7 @@ clock_gettime(clockid_t clock_id, struct timespec *ts)
 }
 
 int
-gettimeofday(struct timeval *restrict tv, void *restrict tz)
+gettimeofday(struct timeval * restrict tv, void * restrict tz)
 {
     (void)tz;
     struct timespec ts;

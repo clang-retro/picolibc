@@ -191,8 +191,8 @@ chdir(const char *path)
     char d = path[0];
     if (d >= 'a' && d <= 'p')
         d -= 'a' - 'A';
-    if (d < 'A' || d > 'P' || path[1] != ':' || (path[2] != '\0' && strcmp(path + 2, "/") != 0
-                                                && strcmp(path + 2, "\\") != 0)) {
+    if (d < 'A' || d > 'P' || path[1] != ':'
+        || (path[2] != '\0' && strcmp(path + 2, "/") != 0 && strcmp(path + 2, "\\") != 0)) {
         errno = ENOENT;
         return -1;
     }

@@ -37,12 +37,12 @@
 #include <unistd.h>
 
 /* fds 0, 1 and 2 are the console, in text mode. */
-static struct __cpm_file con_in = { .flags = __CPM_FD_OPEN | __CPM_FD_READ | __CPM_FD_TEXT,
-                                    .device = __CPM_DEV_CON };
-static struct __cpm_file con_out = { .flags = __CPM_FD_OPEN | __CPM_FD_WRITE | __CPM_FD_TEXT,
-                                     .device = __CPM_DEV_CON };
-static struct __cpm_file con_err = { .flags = __CPM_FD_OPEN | __CPM_FD_WRITE | __CPM_FD_TEXT,
-                                     .device = __CPM_DEV_CON };
+static struct __cpm_file con_in
+    = { .flags = __CPM_FD_OPEN | __CPM_FD_READ | __CPM_FD_TEXT, .device = __CPM_DEV_CON };
+static struct __cpm_file con_out
+    = { .flags = __CPM_FD_OPEN | __CPM_FD_WRITE | __CPM_FD_TEXT, .device = __CPM_DEV_CON };
+static struct __cpm_file con_err
+    = { .flags = __CPM_FD_OPEN | __CPM_FD_WRITE | __CPM_FD_TEXT, .device = __CPM_DEV_CON };
 
 struct __cpm_file *__cpm_fds[__CPM_MAX_FD] = { &con_in, &con_out, &con_err };
 

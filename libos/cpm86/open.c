@@ -90,7 +90,7 @@ open(const char *path, int flags, ...)
         if (__cpm_parse_name(&f->fcb, path, 0) < 0)
             goto fail;
         struct __cpm_fcb fcb = f->fcb;
-        int exists = (uint8_t)__cpm_bdos(BDOS_OPEN, __CPM_PTR(&fcb)) != 0xff;
+        int              exists = (uint8_t)__cpm_bdos(BDOS_OPEN, __CPM_PTR(&fcb)) != 0xff;
         if (exists && (flags & O_CREAT) && (flags & O_EXCL)) {
             errno = EEXIST;
             goto fail;

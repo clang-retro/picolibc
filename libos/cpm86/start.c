@@ -39,10 +39,10 @@
 #include <sys/_initfini.h>
 #include <unistd.h>
 
-char   **environ;
-uint16_t __cpm_version;
-char    *__cpm_brk;
-char    *__cpm_heap_end;
+char     **environ;
+uint16_t   __cpm_version;
+char      *__cpm_brk;
+char      *__cpm_heap_end;
 
 extern int main(int, char **, char **);
 
@@ -131,8 +131,8 @@ void *
 sbrk(ptrdiff_t incr)
 {
     char *old = __cpm_brk;
-    if (incr < 0 ? (size_t)-incr > (size_t)(old - __cpm_heap_start)
-                 : (size_t)incr > (size_t)(__cpm_heap_end - old)) {
+    if (incr<0 ? (size_t)-incr > (size_t)(old - __cpm_heap_start) : (size_t)incr>(size_t)(
+            __cpm_heap_end - old)) {
         errno = ENOMEM;
         return (void *)-1;
     }

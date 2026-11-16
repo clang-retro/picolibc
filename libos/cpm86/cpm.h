@@ -44,7 +44,7 @@ _BEGIN_STD_C
 /* Call the CP/M-86 BDOS (INT E0h): function fn in CL, the parameter in
  * DX, an offset in DS for addresses. Returns AX; byte results are in the
  * low byte. As bdos() in BDS C, Aztec C and other CP/M compilers. */
-unsigned   bdos(int __fn, unsigned __dx);
+unsigned        bdos(int __fn, unsigned __dx);
 
 /* The BDOS version (function 12): 0022h for CP/M-86 1.x, 1031h for CP/M-86
  * Plus, 1431h for Concurrent CP/M. */
@@ -57,12 +57,12 @@ extern uint8_t __cpm_base_page[256] __asm__("___cpm_base_page");
 #define _cpm_base_page __cpm_base_page
 
 /* Console I/O without line editing or echo, with BDOS function 6. */
-int        getch(void);  /* a key, waiting for it */
-int        getche(void); /* a key, echoed */
-int        kbhit(void);  /* whether a key is waiting */
-int        ungetch(int __c);
-int        putch(int __c);
-int        cputs(const char *__s);
+int getch(void);  /* a key, waiting for it */
+int getche(void); /* a key, echoed */
+int kbhit(void);  /* whether a key is waiting */
+int ungetch(int __c);
+int putch(int __c);
+int cputs(const char *__s);
 
 _END_STD_C
 

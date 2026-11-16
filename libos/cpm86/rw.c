@@ -151,7 +151,10 @@ lseek(int fd, off_t offset, int whence)
         errno = ESPIPE;
         return -1;
     }
-    off_t base = whence == SEEK_SET ? 0 : whence == SEEK_CUR ? f->pos : whence == SEEK_END ? f->size : -1;
+    off_t base = whence == SEEK_SET ? 0
+        : whence == SEEK_CUR        ? f->pos
+        : whence == SEEK_END        ? f->size
+                                    : -1;
     if (base < 0) {
         errno = EINVAL;
         return -1;
