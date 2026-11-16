@@ -33,22 +33,27 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-/* setjmp and longjmp for the Z80 and the 8080. C code keeps no registers
- * across calls but the frame pointer IX, so jmp_buf holds the return
- * address, the stack pointer, and IX and IY on the Z80. The buffer is in
- * HL and longjmp's value in DE. */
+/* setjmp and longjmp for the Z80 and the 8080. C code keeps BC across
+ * calls, and IX, the frame pointer, so jmp_buf holds BC, the return
+ * address, the stack pointer, and IX and IY on the Z80, in that order.
+ * The buffer is in HL and longjmp's value in DE. */
 
 	.text
 	.globl	setjmp, _setjmp
 setjmp:
 _setjmp:
-	pop	bc		/* the return address */
 	ld	(hl), c
 	inc	hl
 	ld	(hl), b
 	inc	hl
+	pop	de		/* the return address */
+	push	de
+	ld	(hl), e
+	inc	hl
+	ld	(hl), d
+	inc	hl
 	ex	de, hl
-	ld	hl, 0
+	ld	hl, 2
 	add	hl, sp		/* the stack pointer after the return */
 	ex	de, hl
 	ld	(hl), e
@@ -69,7 +74,6 @@ _setjmp:
 	ld	(hl), d
 #endif
 	ld	hl, 0
-	push	bc
 	ret
 
 	.globl	longjmp, _longjmp
@@ -79,34 +83,43 @@ _longjmp:
 	or	e
 	jp	nz, 1f
 	inc	de		/* longjmp(env, 0) returns 1 */
-1:
+1:	push	de		/* the value, on the old stack */
 #ifdef __z80__
 	push	hl
-	pop	iy
-	ld	c, (iy+0)
-	ld	b, (iy+1)
-	ld	l, (iy+2)
-	ld	h, (iy+3)
-	ld	sp, hl
-	ld	l, (iy+4)
-	ld	h, (iy+5)
-	push	hl
+	ld	de, 6
+	add	hl, de
+	ld	e, (hl)
+	inc	hl
+	ld	d, (hl)
+	inc	hl
+	push	de
 	pop	ix
-	ld	l, (iy+6)
-	ld	h, (iy+7)
-	push	hl
+	ld	e, (hl)
+	inc	hl
+	ld	d, (hl)
+	push	de
 	pop	iy
-#else
-	ld	c, (hl)
+	pop	hl
+#endif
+	ld	e, (hl)		/* BC, for later */
+	inc	hl
+	ld	d, (hl)
+	inc	hl
+	ld	c, (hl)		/* the return address */
 	inc	hl
 	ld	b, (hl)
 	inc	hl
-	ld	a, (hl)
+	ld	a, (hl)		/* the stack pointer */
 	inc	hl
 	ld	h, (hl)
 	ld	l, a
+	dec	hl		/* the return address goes on the new stack */
+	ld	(hl), b
+	dec	hl
+	ld	(hl), c
+	ld	b, d
+	ld	c, e
+	pop	de		/* the value */
 	ld	sp, hl
-#endif
 	ex	de, hl
-	push	bc
 	ret
