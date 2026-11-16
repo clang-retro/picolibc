@@ -41,13 +41,15 @@
 
 _BEGIN_STD_C
 
-/* Call the CP/M-86 BDOS (INT E0h): function fn in CL, the parameter in
- * DX, an offset in DS for addresses. Returns AX; byte results are in the
- * low byte. As bdos() in BDS C, Aztec C and other CP/M compilers. */
+/* Call the BDOS: on CP/M-86 INT E0h with function fn in CL and the
+ * parameter in DX, an offset in DS for addresses, returning AX; on CP/M-80
+ * CALL 0005h with fn in C and the parameter in DE, returning BA. Byte
+ * results are in the low byte. As bdos() in BDS C, Aztec C and other CP/M
+ * compilers. */
 unsigned        bdos(int __fn, unsigned __dx);
 
-/* The BDOS version (function 12): 0022h for CP/M-86 1.x, 1031h for CP/M-86
- * Plus, 1431h for Concurrent CP/M. */
+/* The BDOS version (function 12): 0022h for CP/M-86 1.x and CP/M 2.2,
+ * 1031h for CP/M-86 Plus, 0031h for CP/M 3, 1431h for Concurrent CP/M. */
 extern uint16_t __cpm_version;
 #define _cpm_version __cpm_version
 

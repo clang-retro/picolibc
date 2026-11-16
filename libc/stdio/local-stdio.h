@@ -212,7 +212,7 @@ bufio_text(struct __file_bufio *bf)
 {
     return !(bf->bflags & __BFPTR) && __msdos_is_text(_FDEV_BUFIO_FD(bf));
 }
-#elif defined(__CPM86__)
+#elif defined(__CPM86__) || defined(__CPM80__)
 int __cpm_is_text(int fd);
 
 static inline bool

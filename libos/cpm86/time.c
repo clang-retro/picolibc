@@ -37,14 +37,15 @@
 #include <sys/time.h>
 #include <time.h>
 
-/* CP/M-86 Plus (and Concurrent CP/M) keep the date and time: BDOS function
- * 105 fills in the days since 31 December 1977 and the hour and minute in
- * BCD, and returns the second in BCD. It is local time, taken as UTC here.
- * CP/M-86 1.1 has no clock. */
+/* CP/M-86 Plus, CP/M 3, MP/M and Concurrent CP/M keep the date and time:
+ * BDOS function 105 fills in the days since 31 December 1977 and the hour
+ * and minute in BCD, and returns the second in BCD. It is local time,
+ * taken as UTC here. CP/M-86 1.1 and CP/M 2.2 have no clock: the low byte
+ * of the version is below 30h. */
 static int
 cpm_time(struct timespec *ts)
 {
-    if (__cpm_version < 0x1031) {
+    if ((__cpm_version & 0xff) < 0x30) {
         errno = ENOSYS;
         return -1;
     }

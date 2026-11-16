@@ -1,0 +1,17 @@
+# CP/M-80 on the Z80, built with the clang-retro LLVM toolchain
+# (https://github.com/clang-retro/llvm). Objects are ELF; programs are
+# linked by ld.lld with cpm80.ld and made .COM files by llvm-objcopy.
+[binaries]
+c = ['clang', '--target=z80-unknown-cpm', '-nostdlib']
+ar = 'llvm-ar'
+nm = 'llvm-nm'
+strip = 'llvm-strip'
+
+[host_machine]
+system = 'cpm80'
+cpu_family = 'z80'
+cpu = 'z80'
+endian = 'little'
+
+[properties]
+skip_sanity_check = true

@@ -115,6 +115,12 @@ _BEGIN_STD_C
 #define _JBLEN 9
 #endif
 
+#ifdef __i8080__
+/* The return address, SP, IX and IY (the Z80 and the 8080). */
+#define _JBTYPE unsigned short
+#define _JBLEN  4
+#endif
+
 #ifdef __I86__
 /* SI, DI, BP, SP and IP, with room for the segments of far models. */
 #define _JBTYPE unsigned short

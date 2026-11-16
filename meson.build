@@ -78,6 +78,8 @@ cpu_family_aliases = {
            # loongarch
 		       'loongarch64' : 'loongarch',
 		       'loongarch32' : 'loongarch',
+		       # z80
+		       'i8080' : 'z80',
 		       # m68hc11
 		       'm6811' : 'm68hc11',
 		       'm6812' : 'm68hc11',

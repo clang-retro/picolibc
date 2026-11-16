@@ -454,6 +454,10 @@ warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 #define __IEEE_LITTLE_ENDIAN
 #endif
 
+#ifdef __i8080__
+#define __IEEE_LITTLE_ENDIAN
+#endif
+
 #if defined(__or1k__) || defined(__OR1K__) || defined(__OR1KND__)
 #define __IEEE_BIG_ENDIAN
 #endif

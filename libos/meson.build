@@ -58,6 +58,10 @@ if get_option('os-cpm86')
   subdir('cpm86')
 endif
 
+if get_option('os-cpm80')
+  subdir('cpm80')
+endif
+
 if get_option('os-amigaos')
   subdir('amigaos')
 endif
