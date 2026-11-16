@@ -116,9 +116,9 @@ _BEGIN_STD_C
 #endif
 
 #ifdef __i8080__
-/* The return address, SP, IX and IY (the Z80 and the 8080). */
+/* BC, the return address, SP, IX and IY (the Z80 and the 8080). */
 #define _JBTYPE unsigned short
-#define _JBLEN  4
+#define _JBLEN  5
 #endif
 
 #ifdef __I86__

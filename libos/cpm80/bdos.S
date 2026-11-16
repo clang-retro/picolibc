@@ -37,12 +37,13 @@
  *
  * Calls the BDOS at 0005h with C = fn and DE = de, and returns BA, which
  * CP/M 2.2 and later also leave in HL; byte results are in the low byte.
- * C code keeps no registers across calls but the frame pointer IX, and
- * some BIOSes change IX and IY, so they are saved here on the Z80. */
+ * C code keeps BC and IX across calls, so BC is saved here, and some
+ * BIOSes change IX and IY, so they are saved too on the Z80. */
 
 	.text
 	.globl	__cpm_bdos
 __cpm_bdos:
+	push	bc
 #ifdef __z80__
 	push	ix
 	push	iy
@@ -55,4 +56,5 @@ __cpm_bdos:
 	pop	iy
 	pop	ix
 #endif
+	pop	bc
 	ret
