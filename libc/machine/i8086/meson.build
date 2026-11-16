@@ -51,6 +51,7 @@ endforeach
 
 subdir('sys')
 
-if really_install
+# The DOS headers; CP/M-86 has <cpm.h> from libos/cpm86 instead.
+if really_install and not get_option('os-cpm86')
   install_headers(['conio.h', 'dos.h', 'i86.h', 'io.h'], install_dir: include_dir)
 endif
