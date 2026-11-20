@@ -33,8 +33,9 @@
 # OF THE POSSIBILITY OF SUCH DAMAGE.
 
 # BSD system calls, sbrk and startup code for static programs on 32-bit
-# x86. The BSD is the one the compiler targets (__FreeBSD__). These go into libc itself, so a program links with crt1.o and libc
-# only.
+# x86. The BSD is the one the compiler targets (__FreeBSD__ or
+# __NetBSD__). These go into libc itself, so a program links with crt1.o
+# and libc only.
 
 has_os_library = true
 has_os_posix = true

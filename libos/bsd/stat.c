@@ -60,6 +60,28 @@ struct bsd_stat {
     int32_t  st_lspare;
     int64_t  st_qspare[2];
 };
+#elif defined(__NetBSD__)
+/* NetBSD's struct stat from 1.3 to 2.x (__stat13) on 32-bit x86. */
+struct bsd_stat {
+    uint32_t st_dev;
+    uint32_t st_ino;
+    uint32_t st_mode;
+    uint32_t st_nlink;
+    uint32_t st_uid;
+    uint32_t st_gid;
+    uint32_t st_rdev;
+    struct {
+        long sec; /* time_t */
+        long nsec;
+    } st_atim, st_mtim, st_ctim;
+    int64_t  st_size;
+    int64_t  st_blocks;
+    uint32_t st_blksize;
+    uint32_t st_flags;
+    uint32_t st_gen;
+    int32_t  st_lspare;
+    int64_t  st_qspare[2];
+};
 #endif
 
 static int

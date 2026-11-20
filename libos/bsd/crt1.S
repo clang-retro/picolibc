@@ -52,4 +52,20 @@ _start:
 	hlt
 	.size	_start, . - _start
 
+#ifdef __NetBSD__
+/*
+ * NetBSD's kernel runs an ELF program as a NetBSD one only with this note
+ * (NT_NETBSD_IDENT, with the release it was built for: 1.5, the first
+ * ELF release on x86).
+ */
+	.section .note.netbsd.ident, "a", @note
+	.p2align 2
+	.long	7
+	.long	4
+	.long	1
+	.asciz	"NetBSD"
+	.p2align 2
+	.long	105000000
+#endif
+
 	.section .note.GNU-stack,"",@progbits
