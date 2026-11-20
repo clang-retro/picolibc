@@ -78,6 +78,10 @@ if get_option('os-solaris')
   subdir('solaris')
 endif
 
+if get_option('os-bsd')
+  subdir('bsd')
+endif
+
 if get_option('os-os2')
   subdir('os2')
 endif
