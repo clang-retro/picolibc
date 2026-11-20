@@ -48,35 +48,43 @@
  * arguments on the stack above a return address, the result in eax (and
  * edx); on failure the kernel sets the carry flag and puts the BSD error
  * number in eax. The numbers are the 4.4BSD ones. Where the BSDs went
- * different ways (stat, lseek), these are the calls the oldest ELF
- * releases have, which the later ones keep for compatibility.
+ * different ways (stat), these are the calls the oldest ELF releases
+ * have, which the later ones keep for compatibility.
  */
 
-#if defined(__FreeBSD__)
-#define __BSD_SYS_exit         1
-#define __BSD_SYS_read         3
-#define __BSD_SYS_write        4
-#define __BSD_SYS_open         5
-#define __BSD_SYS_close        6
-#define __BSD_SYS_unlink       10
-#define __BSD_SYS_chdir        12
-#define __BSD_SYS_break        17
-#define __BSD_SYS_getpid       20
-#define __BSD_SYS_access       33
-#define __BSD_SYS_kill         37
-#define __BSD_SYS_ioctl        54
+/* The 4.4BSD calls, the same on FreeBSD and NetBSD. */
+#define __BSD_SYS_exit   1
+#define __BSD_SYS_read   3
+#define __BSD_SYS_write  4
+#define __BSD_SYS_open   5
+#define __BSD_SYS_close  6
+#define __BSD_SYS_unlink 10
+#define __BSD_SYS_chdir  12
+#define __BSD_SYS_break  17
+#define __BSD_SYS_getpid 20
+#define __BSD_SYS_access 33
+#define __BSD_SYS_kill   37
+#define __BSD_SYS_ioctl  54
+/* 32-bit time_t (compat_50 on NetBSD 5 and later) */
 #define __BSD_SYS_gettimeofday 116
 #define __BSD_SYS_rename       128
 #define __BSD_SYS_mkdir        136
 #define __BSD_SYS_rmdir        137
+/* lseek(fd, pad, off_t, whence) (freebsd6_lseek on FreeBSD 7 and later) */
+#define __BSD_SYS_lseek 199
+
+#if defined(__FreeBSD__)
 /* FreeBSD 3 to 11's stat (freebsd11_stat in 12 and later) */
 #define __BSD_SYS_stat  188
 #define __BSD_SYS_fstat 189
 #define __BSD_SYS_lstat 190
-/* lseek(fd, pad, off_t, whence) (freebsd6_lseek in 7 and later) */
-#define __BSD_SYS_lseek 199
+#elif defined(__NetBSD__)
+/* NetBSD 1.3 to 2.x's __stat13 (compat_30 in 3.0 and later) */
+#define __BSD_SYS_stat  278
+#define __BSD_SYS_fstat 279
+#define __BSD_SYS_lstat 280
 #else
-#error "Build with --target=i386-unknown-freebsd"
+#error "Build with --target=i386-unknown-freebsd or i386-unknown-netbsd"
 #endif
 
 /* ioctl that tcgetattr makes: TIOCGETA, struct termios. */
