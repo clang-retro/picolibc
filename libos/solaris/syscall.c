@@ -35,6 +35,7 @@
 
 #include "local-solaris.h"
 
+#ifdef __sparc__
 long
 __solaris_syscall(long n, long a, long b, long c, long d)
 {
@@ -54,6 +55,7 @@ __solaris_syscall(long n, long a, long b, long c, long d)
         return __solaris_error(o0);
     return o0;
 }
+#endif /* __sparc__; the x86 __solaris_syscall is in syscall-i386.S */
 
 /* Solaris uses the SVR4 numbers. The first 34 are the same as picolibc's. */
 long
