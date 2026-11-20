@@ -33,7 +33,7 @@
 # OF THE POSSIBILITY OF SUCH DAMAGE.
 
 # Solaris 2.x system calls, sbrk and startup code for static programs on
-# 32-bit SPARC. These go into libc itself, so a program links
+# 32-bit SPARC and x86. These go into libc itself, so a program links
 # with crt1.o and libc only.
 
 has_os_library = true
@@ -42,11 +42,17 @@ has_os_fileio = true
 
 srcs_os_solaris = [
   'files.c',
-  'qp.c',
   'start.c',
   'stat.c',
   'syscall.c',
 ]
+
+# SPARC long double is IEEE quad, done in software with the _Q_ calls.
+if host_cpu_family == 'sparc'
+  srcs_os_solaris += 'qp.c'
+elif host_cpu_family == 'x86'
+  srcs_os_solaris += 'syscall-i386.S'
+endif
 
 # Signals and sysconf come from the fallback library.
 srcs_os_solaris_fallback = [

@@ -1,0 +1,19 @@
+# Solaris 2.x to 11 on x86 (32-bit), for static programs, built with the
+# clang-retro LLVM toolchain (https://github.com/clang-retro/llvm). The
+# code is for the i486, with x87 floating point, so it runs on every PC
+# these Solaris releases support. (clang's default for Solaris on x86 is
+# the Pentium 4, with SSE2.)
+[binaries]
+c = ['clang', '--target=i386-pc-solaris', '-march=i486', '-nostdlib']
+ar = 'llvm-ar'
+nm = 'llvm-nm'
+strip = 'llvm-strip'
+
+[host_machine]
+system = 'solaris'
+cpu_family = 'x86'
+cpu = 'i486'
+endian = 'little'
+
+[properties]
+skip_sanity_check = true

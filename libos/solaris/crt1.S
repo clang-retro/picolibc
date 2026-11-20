@@ -33,6 +33,30 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+#ifdef __i386__
+/*
+ * Program entry for static Solaris programs on x86. The kernel starts
+ * _start with esp pointing at argc, then argv[], a null, envp[] and a
+ * null. A dynamic program's run-time linker would pass a function for
+ * atexit in edx; a static one has none.
+ */
+
+	.text
+	.align	4
+	.globl	_start
+	.type	_start, @function
+_start:
+	xorl	%ebp, %ebp
+	movl	%esp, %eax
+	andl	$-16, %esp
+	subl	$12, %esp
+	pushl	%eax
+	call	__solaris_start
+	hlt
+	.size	_start, . - _start
+
+#else
+
 /*
  * Program entry for static Solaris programs on 32-bit SPARC. The kernel
  * starts _start with sp pointing at a 64-byte register save area, then
@@ -52,3 +76,5 @@ _start:
 	 sub	%sp, 96, %sp
 	ta	5
 	.size	_start, . - _start
+
+#endif
