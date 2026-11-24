@@ -47,32 +47,52 @@ uint16_t __win16_hprevinstance;
 uint16_t __win16_cmdshow;
 char     __win16_cmdline[128];
 
-/* The heap is one block from Windows that sbrk hands out: a fixed block of
- * the local heap in DGROUP with near data pointers, or a 64 KiB global
- * segment with far ones. Windows grows DGROUP for the local block as far as
- * it can; some of the local heap stays free for Windows itself (edit
- * controls keep their text there). */
-void
-__win16_init_heap(void)
+/* The heap is memory from Windows that sbrk hands out: a fixed block of
+ * the local heap in DGROUP with near data pointers, or 64 KiB global
+ * segments with far ones. Windows grows DGROUP for the local block as far
+ * as it can; some of the local heap stays free for Windows itself (edit
+ * controls keep their text there). With far data, sbrk asks for another
+ * segment (__win16_grow_heap) when one is full. */
+#if defined(__COMPACT__) || defined(__LARGE__)
+/* Makes a new global segment of at least incr bytes the heap; returns 1,
+ * or 0 when Windows has no memory. */
+int
+__win16_grow_heap(size_t incr)
 {
     char    *base = NULL;
     uint32_t size;
-#if defined(__COMPACT__) || defined(__LARGE__)
-    for (size = 0xfff0; size >= 0x1000 && !base; size >>= 1) {
+    for (size = 0xfff0; size >= 0x1000 && size >= incr && !base; size >>= 1) {
         uint16_t h = GlobalAlloc(0 /* GMEM_FIXED */, size);
         if (h)
             base = GlobalLock(h);
     }
+    if (!base)
+        return 0;
+    size <<= 1;
+    __msdos_heap_base = __msdos_brk = base;
+    __msdos_heap_end = base + size;
+    return 1;
+}
+#endif
+
+void
+__win16_init_heap(void)
+{
+#if defined(__COMPACT__) || defined(__LARGE__)
+    if (!__win16_grow_heap(0))
+        __msdos_heap_base = __msdos_brk = __msdos_heap_end = NULL;
 #else
+    char    *base = NULL;
+    uint32_t size;
     for (size = 0x8000; size >= 0x400 && !base; size >>= 1)
         base = (char *)(uintptr_t)LocalAlloc(0 /* LMEM_FIXED */, size);
-#endif
     if (!base)
         size = 0;
     else
         size <<= 1;
     __msdos_heap_base = __msdos_brk = base;
     __msdos_heap_end = base + size;
+#endif
 }
 
 uint16_t        __win16_heapsize;

@@ -152,6 +152,9 @@ extern char __far      *__win16_libcmdline;
 int                     __win16_libstart(void);
 /* Take the heap from Windows. */
 void                    __win16_init_heap(void);
+#if defined(__COMPACT__) || defined(__LARGE__)
+int __win16_grow_heap(size_t incr);
+#endif
 
 /* A console window in the program (the QuickWin library of win16-sdk) sets
  * these to take the input and output of file descriptors 0, 1 and 2. They

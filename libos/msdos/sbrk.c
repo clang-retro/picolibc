@@ -54,6 +54,14 @@ void *
 sbrk(ptrdiff_t incr)
 {
     char *old = __msdos_brk;
+#if defined(__WINDOWS__) && (defined(__COMPACT__) || defined(__LARGE__))
+    /* Windows with far data: when the segment of the heap is full, the
+     * heap goes on in a new segment. malloc takes memory that does not
+     * follow the old break as a new chunk. */
+    if (incr > 0 && (room_t)incr > (room_t)(__msdos_heap_end - old)
+        && __win16_grow_heap((size_t)incr))
+        old = __msdos_brk;
+#endif
     if (incr<0 ? (room_t)-incr > (room_t)(old - __msdos_heap_base) : (room_t)incr>(room_t)(
             __msdos_heap_end - old)) {
         errno = ENOMEM;
