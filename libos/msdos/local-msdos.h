@@ -159,8 +159,8 @@ int __win16_grow_heap(size_t incr);
 /* A console window in the program (the QuickWin library of win16-sdk) sets
  * these to take the input and output of file descriptors 0, 1 and 2. They
  * are null otherwise, and those descriptors go to DOS. */
-extern ssize_t          (*__win16_console_read)(int fd, void *buf, size_t count);
-extern ssize_t          (*__win16_console_write)(int fd, const void *buf, size_t count);
+extern ssize_t (*__win16_console_read)(int fd, void *buf, size_t count);
+extern ssize_t (*__win16_console_write)(int fd, const void *buf, size_t count);
 #define __WIN16_CONSOLE_FD(fd) ((unsigned)(fd) <= 2)
 #endif
 
