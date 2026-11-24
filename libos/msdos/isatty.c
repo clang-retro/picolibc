@@ -36,9 +36,15 @@
 #include "local-msdos.h"
 #include <unistd.h>
 
+/* Returns 1 if fd is a character device, such as the console. On Windows,
+ * the console window of the program is one too. */
 int
 isatty(int fd)
 {
+#ifdef __WINDOWS__
+    if (__win16_console_write && __WIN16_CONSOLE_FD(fd))
+        return 1;
+#endif
     int d = __msdos_isdevice(fd);
     if (d == 0)
         errno = ENOTTY;

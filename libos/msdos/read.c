@@ -67,6 +67,10 @@ ssize_t
 read(int fd, void *buf, size_t count)
 {
     int flags = __msdos_fdflags(fd);
+#ifdef __WINDOWS__
+    if (__win16_console_read && __WIN16_CONSOLE_FD(fd))
+        return __win16_console_read(fd, buf, count);
+#endif
     if (!(flags & __MSDOS_FD_TEXT))
         return dos_read(fd, buf, count);
     if (flags & __MSDOS_FD_EOF)
