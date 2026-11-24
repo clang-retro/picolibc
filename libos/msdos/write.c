@@ -65,6 +65,10 @@ write(int fd, const void *buf, size_t count)
     size_t      n;
     int         flags = __msdos_fdflags(fd);
 
+#ifdef __WINDOWS__
+    if (__win16_console_write && __WIN16_CONSOLE_FD(fd))
+        return __win16_console_write(fd, buf, count);
+#endif
     if (count > __MSDOS_MAX_IO)
         count = __MSDOS_MAX_IO;
     if (flags & __MSDOS_FD_APPEND) {
