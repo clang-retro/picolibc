@@ -39,8 +39,8 @@
 #include <sys/_initfini.h>
 
 #ifdef __WINDOWS__
-ssize_t (*__win16_console_read)(int fd, void *buf, size_t count);
-ssize_t (*__win16_console_write)(int fd, const void *buf, size_t count);
+ssize_t  (*__win16_console_read)(int fd, void *buf, size_t count);
+ssize_t  (*__win16_console_write)(int fd, const void *buf, size_t count);
 
 uint16_t __win16_hinstance;
 uint16_t __win16_hprevinstance;
