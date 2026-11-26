@@ -51,5 +51,5 @@ lseek(int fd, off_t offset, int whence)
         return __msdos_error(r.ax);
     /* A text file can be read again after its Ctrl-Z once moved. */
     __msdos_set_fdflags(fd, __msdos_fdflags(fd) & ~__MSDOS_FD_EOF);
-    return ((uint32_t)r.dx << 16) | r.ax;
+    return ((uint32_t)(r.dx & 0xffff) << 16) | (r.ax & 0xffff);
 }

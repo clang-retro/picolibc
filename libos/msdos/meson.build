@@ -39,6 +39,115 @@ has_os_library = true
 has_os_posix = true
 has_os_fileio = true
 
+if host_machine.cpu_family() == 'x86'
+  # 32-bit DOS (i386-pc-msdos): flat protected mode under the DOS/32A
+  # extender. The DOS calls are the ones of 16-bit DOS, with 32-bit
+  # registers and flat pointers (see local-msdos.h); the startup code, the
+  # heap, the interrupt calls and DPMI are in dpmi/.
+  srcs_os_msdos = [
+    '_exit.c',
+    'access.c',
+    'chdir.c',
+    'chmod.c',
+    'clock_getres.c',
+    'clock_gettime.c',
+    'close.c',
+    'conin.c',
+    'conio.c',
+    'context.c',
+    'cprintf.c',
+    'delay.c',
+    'dirent.c',
+    'dosmktime.c',
+    'dostime.c',
+    'dup.c',
+    'dup2.c',
+    'error.c',
+    'execve.c',
+    'fdflags.c',
+    'fork.c',
+    'fstat.c',
+    'getcwd.c',
+    'getentropy.c',
+    'getpass.c',
+    'getpid.c',
+    'gettimeofday.c',
+    'getuid.c',
+    'isatty.c',
+    'isdevice.c',
+    'link.c',
+    'lseek.c',
+    'lstat.c',
+    'mkdir.c',
+    'nanosleep.c',
+    'open.c',
+    'pipe.c',
+    'read.c',
+    'realpath.c',
+    'rename.c',
+    'rmdir.c',
+    'sbrk.c',
+    'setmode.c',
+    'stat.c',
+    'statvfs.c',
+    'tcgetattr.c',
+    'tcsetattr.c',
+    'times.c',
+    'truncate.c',
+    'unlink.c',
+    'utime.c',
+    'waitpid.c',
+    'write.c',
+    'dpmi' / 'dpmi.c',
+    'dpmi' / 'int21.S',
+    'dpmi' / 'int21.c',
+    'dpmi' / 'int386.S',
+    'dpmi' / 'int386.c',
+    'dpmi' / 'start.c',
+  ]
+
+  srcs_os_msdos_fallback = [
+    'fpathconf.c',
+    'kill.c',
+    'pathconf.c',
+    'raise.c',
+    'signal.c',
+    'sigprocmask.c',
+    'sysconf.c',
+  ]
+
+  srcs_libos += srcs_os_msdos + srcs_os_msdos_fallback
+
+  src_os_msdos = files(srcs_os_msdos)
+  foreach f : srcs_os_msdos_fallback
+    src_os_msdos += files('..' / 'fallback' / f)
+  endforeach
+
+  if really_install
+    install_headers(['dpmi/include/dos.h', 'dpmi/include/dpmi.h', 'dpmi/include/i86.h',
+                     '../../libc/machine/i8086/conio.h', '../../libc/machine/i8086/io.h'],
+                    install_dir: include_dir)
+  endif
+
+  foreach params : targets
+    target = params['name']
+    target_dir = params['dir']
+    target_c_args = params['c_args']
+
+    instdir = join_paths(lib_dir, target_dir)
+
+    custom_target('crt0' + target,
+                  input : 'dpmi' / 'crt0.S',
+                  output : 'crt0.o',
+                  command : cc.cmd_array() + target_c_args + c_args +
+                            ['-c', '@INPUT@', '-o', '@OUTPUT@'],
+                  install : really_install,
+                  install_dir : instdir,
+                  build_by_default : true)
+  endforeach
+  subdir_done()
+endif
+
 srcs_os_msdos = [
   '_exit.c',
   'access.c',

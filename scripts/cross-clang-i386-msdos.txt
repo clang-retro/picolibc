@@ -1,0 +1,19 @@
+# 32-bit DOS (flat protected mode under the DOS/32A extender), built with
+# the clang-retro LLVM toolchain. Objects are ELF; programs are LE
+# executables with DOS/32A as the stub, linked by a Watcom-style linker
+# (wlink or JWlink).
+[binaries]
+c = ['clang', '--target=i386-pc-msdos', '-march=i386', '-nostdlib']
+c_ld = '@DIRNAME@/i8086-msdos-ld'
+ar = 'llvm-ar'
+nm = 'llvm-nm'
+strip = 'llvm-strip'
+
+[host_machine]
+system = 'msdos'
+cpu_family = 'x86'
+cpu = 'i386'
+endian = 'little'
+
+[properties]
+skip_sanity_check = true
