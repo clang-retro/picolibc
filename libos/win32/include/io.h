@@ -54,17 +54,17 @@
 _BEGIN_STD_C
 
 /* The Win32 handle of a descriptor, or -1. */
-intptr_t _get_osfhandle(int fd);
+intptr_t  _get_osfhandle(int fd);
 /* A new descriptor for a Win32 handle; flags may hold O_TEXT, O_BINARY
  * and O_APPEND. Closing the descriptor closes the handle. */
-int      _open_osfhandle(intptr_t handle, int flags);
+int       _open_osfhandle(intptr_t handle, int flags);
 
-int      _close(int fd);
-int      _dup(int fd);
-int      _dup2(int fd, int fd2);
-int      _isatty(int fd);
+int       _close(int fd);
+int       _dup(int fd);
+int       _dup2(int fd, int fd2);
+int       _isatty(int fd);
 /* Opens a file by its wide (UTF-16) name. */
-int      _wopen(const __win32_wchar *path, int flags, ...);
+int       _wopen(const __win32_wchar *path, int flags, ...);
 
 int       _open(const char *path, int flags, ...);
 int       _creat(const char *path, int mode);

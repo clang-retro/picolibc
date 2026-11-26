@@ -299,7 +299,7 @@ readlink(const char * restrict path, char * restrict buf, size_t size)
     return -1;
 }
 
-int   _unlink(const char *path) __attribute__((__alias__("unlink")));
-int   _rmdir(const char *path) __attribute__((__alias__("rmdir")));
-int   _chdir(const char *path) __attribute__((__alias__("chdir")));
-int   _access(const char *path, int mode) __attribute__((__alias__("access")));
+int _unlink(const char *path) __attribute__((__alias__("unlink")));
+int _rmdir(const char *path) __attribute__((__alias__("rmdir")));
+int _chdir(const char *path) __attribute__((__alias__("chdir")));
+int _access(const char *path, int mode) __attribute__((__alias__("access")));
