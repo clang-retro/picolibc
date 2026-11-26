@@ -82,6 +82,10 @@ if get_option('os-bsd')
   subdir('bsd')
 endif
 
+if get_option('os-sco')
+  subdir('sco')
+endif
+
 if get_option('os-os2')
   subdir('os2')
 endif

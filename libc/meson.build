@@ -82,6 +82,7 @@ src_cpart += get_variable('src_os_tos', [])
 src_cpart += get_variable('src_os_irix', [])
 src_cpart += get_variable('src_os_solaris', [])
 src_cpart += get_variable('src_os_bsd', [])
+src_cpart += get_variable('src_os_sco', [])
 src_cpart += get_variable('src_os_os2', [])
 src_cpart += get_variable('src_os_win32', [])
 
