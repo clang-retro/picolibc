@@ -75,6 +75,14 @@ struct __dpmi_thread {
     int                   detached; /* release the record when the thread ends */
     jmp_buf               exit;     /* pthread_exit jumps here */
     const void           *values[PTHREAD_KEYS_MAX];
+    struct dtor          *dtors; /* the C++ thread_local destructors, last first */
+};
+
+/* A destructor of a C++ thread_local object (__cxa_thread_atexit_impl). */
+struct dtor {
+    struct dtor *next;
+    void         (*fn)(void *);
+    void        *obj;
 };
 
 void                         __dpmi_switch(void **save_sp, void *new_sp);
@@ -153,6 +161,49 @@ run_destructors(struct __dpmi_thread *t)
     }
 }
 
+/* Calls the C++ thread_local destructors of thread t, the last one
+   registered first. A destructor can register more. */
+static void
+run_dtors(struct __dpmi_thread *t)
+{
+    struct dtor *d;
+    while ((d = t->dtors) != NULL) {
+        t->dtors = d->next;
+        d->fn(d->obj);
+        free(d);
+    }
+}
+
+/* Calls the main thread's thread_local destructors when the program
+   ends. */
+static void
+main_dtors(void)
+{
+    run_dtors(&main_thread);
+}
+
+/* Registers the destructor of a C++ thread_local object of the current
+   thread. It runs when the thread ends, before the key destructors (or
+   when the program ends, for the main thread). */
+int
+__cxa_thread_atexit_impl(void (*fn)(void *), void *obj, void *dso)
+{
+    static int   registered;
+    struct dtor *d = malloc(sizeof *d);
+    (void)dso;
+    if (!d)
+        return -1;
+    if (current == &main_thread && !registered) {
+        registered = 1;
+        atexit(main_dtors);
+    }
+    d->fn = fn;
+    d->obj = obj;
+    d->next = current->dtors;
+    current->dtors = d;
+    return 0;
+}
+
 /* Takes the current thread out of the ring and runs the next one. The
    next thread releases the stack. Does not return. */
 static __attribute__((noreturn)) void
@@ -178,6 +229,7 @@ thread_entry(void)
     reap();
     if (setjmp(t->exit) == 0)
         t->result = t->start(t->arg);
+    run_dtors(t);
     run_destructors(t);
     finish();
 }

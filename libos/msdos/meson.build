@@ -97,6 +97,7 @@ if host_machine.cpu_family() == 'x86'
     'utime.c',
     'waitpid.c',
     'write.c',
+    'dpmi' / 'atomic.c',
     'dpmi' / 'dpmi.c',
     'dpmi' / 'emutls.c',
     'dpmi' / 'int21.S',
