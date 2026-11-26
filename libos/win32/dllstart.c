@@ -56,19 +56,37 @@ DllMain(__win32_handle module, __win32_dword reason, void *reserved);
 __win32_bool __attribute__((__stdcall__)) DllMainCRTStartup(__win32_handle module,
                                                             __win32_dword reason, void *reserved);
 
+int                                       __win32_in_dll;
+
+/* The entry point: sets up the library and runs the constructors, then
+ * DllMain, then the atexit functions and destructors at unload. Windows
+ * 9x does not run the TLS callbacks of a DLL, and a DLL of the emulated
+ * TLS build has no TLS directory, so there this runs them for the
+ * threads that start and end: thread_local destructors and the
+ * destructors of TlsAlloc keys need them. */
 __win32_bool __attribute__((__stdcall__, __used__))
 DllMainCRTStartup(__win32_handle module, __win32_dword reason, void *reserved)
 {
     if (reason == DLL_PROCESS_ATTACH) {
+        __win32_in_dll = 1;
         __win32_init();
         __main();
     }
+    if (reason == __WIN32_DLL_THREAD_ATTACH && __win32_runs_tls_callbacks())
+        __win32_tls_callbacks(module, reason);
     __win32_bool ret = DllMain ? DllMain(module, reason, reserved) : 1;
     if (reason == DLL_PROCESS_ATTACH && !ret) {
         /* Windows does not send DLL_PROCESS_DETACH after a failed attach. */
         __call_exitprocs(0, NULL);
     } else if (reason == DLL_PROCESS_DETACH) {
         __call_exitprocs(0, NULL);
+    } else if (reason == __WIN32_DLL_THREAD_DETACH && __win32_runs_tls_callbacks()) {
+        __win32_tls_callbacks(module, reason);
     }
+#ifdef __WIN32_EMUTLS
+    /* Without a TLS directory, Windows runs no callback at unload. */
+    if (reason == DLL_PROCESS_DETACH)
+        __win32_tls_callbacks(module, reason);
+#endif
     return ret;
 }

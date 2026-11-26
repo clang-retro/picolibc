@@ -320,6 +320,10 @@ typedef __rsize_t rsize_t;
 
 _END_STD_C
 
+#ifdef _WIN32
+#include <sys/_win32wchar.h>
+#endif
+
 #if __SSP_FORTIFY_LEVEL > 0
 #include <ssp/wchar.h>
 #endif

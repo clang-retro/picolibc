@@ -192,4 +192,8 @@ int futimens(int, const struct timespec[2]);
 
 _END_STD_C
 
+#ifdef _WIN32
+#include <sys/_win32stat.h>
+#endif
+
 #endif /* _SYS_STAT_H */

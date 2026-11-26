@@ -239,33 +239,49 @@ __WIN32_API __win32_bool   GetDiskFreeSpaceA(const char *root, __win32_dword *se
                                              __win32_dword *bytes_per_sector,
                                              __win32_dword *free_clusters,
                                              __win32_dword *total_clusters);
+__WIN32_API __win32_dword  GetLogicalDrives(void);
+__WIN32_API __win32_bool   LockFile(__win32_handle h, __win32_dword offset_low,
+                                    __win32_dword offset_high, __win32_dword n_low,
+                                    __win32_dword n_high);
+__WIN32_API __win32_bool   UnlockFile(__win32_handle h, __win32_dword offset_low,
+                                      __win32_dword offset_high, __win32_dword n_low,
+                                      __win32_dword n_high);
+__WIN32_API __win32_bool   Beep(__win32_dword frequency, __win32_dword ms);
+__WIN32_API int  MultiByteToWideChar(unsigned int codepage, __win32_dword flags, const char *multi,
+                                     int nmulti, wchar_t *wide, int nwide);
 
-__WIN32_API void           GetSystemTime(struct __win32_systemtime *t);
-__WIN32_API __win32_bool   SystemTimeToFileTime(const struct __win32_systemtime *t,
-                                                struct __win32_filetime         *ft);
-__WIN32_API __win32_dword  GetTickCount(void);
-__WIN32_API __win32_bool   QueryPerformanceCounter(int64_t *count);
-__WIN32_API __win32_bool   QueryPerformanceFrequency(int64_t *frequency);
-__WIN32_API void           Sleep(__win32_dword ms);
+__WIN32_API void GetSystemTime(struct __win32_systemtime *t);
+__WIN32_API __win32_bool  SystemTimeToFileTime(const struct __win32_systemtime *t,
+                                               struct __win32_filetime         *ft);
+__WIN32_API __win32_dword GetTickCount(void);
+__WIN32_API __win32_bool  QueryPerformanceCounter(int64_t *count);
+__WIN32_API __win32_bool  QueryPerformanceFrequency(int64_t *frequency);
+__WIN32_API void          Sleep(__win32_dword ms);
 
-__WIN32_API void          *TlsGetValue(__win32_dword key);
-__WIN32_API void           InitializeCriticalSection(struct __win32_critical_section *cs);
-__WIN32_API void           EnterCriticalSection(struct __win32_critical_section *cs);
-__WIN32_API void           LeaveCriticalSection(struct __win32_critical_section *cs);
-__WIN32_API void           DeleteCriticalSection(struct __win32_critical_section *cs);
+__WIN32_API __win32_dword TlsAlloc(void);
+__WIN32_API void         *TlsGetValue(__win32_dword key);
+__WIN32_API __win32_bool  TlsSetValue(__win32_dword key, void *value);
+__WIN32_API void          InitializeCriticalSection(struct __win32_critical_section *cs);
+__WIN32_API void          EnterCriticalSection(struct __win32_critical_section *cs);
+__WIN32_API void          LeaveCriticalSection(struct __win32_critical_section *cs);
+__WIN32_API void          DeleteCriticalSection(struct __win32_critical_section *cs);
 
-__WIN32_API __win32_bool   CreateProcessA(const char *application, char *command_line,
-                                          struct __win32_security_attributes *process_security,
-                                          struct __win32_security_attributes *thread_security,
-                                          __win32_bool inherit, __win32_dword flags, void *env,
-                                          const char *directory, struct __win32_startup_info *startup,
-                                          struct __win32_process_info *info);
-__WIN32_API __win32_dword  WaitForSingleObject(__win32_handle h, __win32_dword ms);
-__WIN32_API __win32_bool   GetExitCodeProcess(__win32_handle h, __win32_dword *status);
+__WIN32_API __win32_bool  CreateProcessA(const char *application, char *command_line,
+                                         struct __win32_security_attributes *process_security,
+                                         struct __win32_security_attributes *thread_security,
+                                         __win32_bool inherit, __win32_dword flags, void *env,
+                                         const char *directory, struct __win32_startup_info *startup,
+                                         struct __win32_process_info *info);
+__WIN32_API __win32_dword WaitForSingleObject(__win32_handle h, __win32_dword ms);
+__WIN32_API __win32_bool  GetExitCodeProcess(__win32_handle h, __win32_dword *status);
 
 /* Set errno from a Win32 error code (GetLastError() if code is 0) and
  * return -1. */
-int                        __win32_error(__win32_dword code);
+int                       __win32_error(__win32_dword code);
+
+/* A wide name as a name in the ANSI code page, in buf (PATH_MAX bytes).
+ * NULL with errno ENAMETOOLONG when it does not fit. */
+char                     *__win32_ansi_name(const wchar_t *wide, char *buf);
 
 /* Time: FILETIME counts 100 ns since 1601. */
 #define __WIN32_EPOCH_DIFF 116444736000000000LL /* 1601 to 1970 in 100 ns */
@@ -312,6 +328,31 @@ __win32_fdflags(int fd)
 {
     return fd >= 0 && fd < __WIN32_MAX_FD ? __win32_fds[fd].flags : 0;
 }
+
+/* TLS callbacks, from tlssup.c. Windows 9x does not run them. */
+#define __WIN32_DLL_PROCESS_DETACH 0
+#define __WIN32_DLL_PROCESS_ATTACH 1
+#define __WIN32_DLL_THREAD_ATTACH  2
+#define __WIN32_DLL_THREAD_DETACH  3
+int  __win32_is_9x(void);
+void __win32_tls_callbacks(void *module, __win32_dword reason);
+/* Not zero when the library itself must run the TLS callbacks of its
+ * module: on Windows 9x, and always in the emulated TLS build
+ * (-Dwin32-emutls=true), whose modules have no TLS directory. */
+static inline int
+__win32_runs_tls_callbacks(void)
+{
+#ifdef __WIN32_EMUTLS
+    return 1;
+#else
+    return __win32_is_9x();
+#endif
+}
+/* Set when this copy of the library is in a DLL (dllstart.c). */
+extern int            __win32_in_dll;
+/* Runs the thread exit work that Windows 9x leaves out, for a thread of
+ * a program that ends (thread.c). */
+void                  __win32_thread_end(void);
 
 /* Process startup, from start.c. */
 extern __win32_handle __win32_heap;

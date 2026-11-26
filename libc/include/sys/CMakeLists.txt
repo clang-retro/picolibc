@@ -71,6 +71,11 @@ picolibc_headers(sys
   _timespec.h
   timespec.h
   _timeval.h
+  _win32stat.h
+  _win32stdio.h
+  _win32stdlib.h
+  _win32string.h
+  _win32wchar.h
   tree.h
   _types.h
   types.h
