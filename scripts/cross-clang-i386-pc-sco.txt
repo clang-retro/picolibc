@@ -1,0 +1,19 @@
+# SCO UnixWare (2 and later) and OpenServer (5 and later) on 32-bit x86,
+# for static programs, built with the clang-retro LLVM toolchain
+# (https://github.com/clang-retro/llvm). The code is for the i386 (clang's
+# default on SCO), with x87 floating point, so it runs on every PC these
+# systems support.
+[binaries]
+c = ['clang', '--target=i386-pc-sco', '-nostdlib']
+ar = 'llvm-ar'
+nm = 'llvm-nm'
+strip = 'llvm-strip'
+
+[host_machine]
+system = 'sco'
+cpu_family = 'x86'
+cpu = 'i386'
+endian = 'little'
+
+[properties]
+skip_sanity_check = true
