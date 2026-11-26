@@ -79,7 +79,6 @@ if host_machine.cpu_family() == 'x86'
     'lseek.c',
     'lstat.c',
     'mkdir.c',
-    'nanosleep.c',
     'open.c',
     'pipe.c',
     'read.c',
@@ -99,11 +98,14 @@ if host_machine.cpu_family() == 'x86'
     'waitpid.c',
     'write.c',
     'dpmi' / 'dpmi.c',
+    'dpmi' / 'emutls.c',
     'dpmi' / 'int21.S',
     'dpmi' / 'int21.c',
     'dpmi' / 'int386.S',
     'dpmi' / 'int386.c',
     'dpmi' / 'start.c',
+    'dpmi' / 'switch.S',
+    'dpmi' / 'thread.c',
   ]
 
   srcs_os_msdos_fallback = [
@@ -125,6 +127,7 @@ if host_machine.cpu_family() == 'x86'
 
   if really_install
     install_headers(['dpmi/include/dos.h', 'dpmi/include/dpmi.h', 'dpmi/include/i86.h',
+                     'dpmi/include/pthread.h',
                      '../../libc/machine/i8086/conio.h', '../../libc/machine/i8086/io.h'],
                     install_dir: include_dir)
   endif

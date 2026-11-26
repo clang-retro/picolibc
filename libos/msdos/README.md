@@ -222,7 +222,8 @@ startup code and the heap differ:
 With the cross file `scripts/cross-clang-i386-msdos.txt` (host CPU family
 `x86`), `-Dos-msdos=true` builds the library for 32-bit DOS programs
 (`i386-pc-msdos`). Build it with `-Dsingle-thread=true` and
-`-Dthread-local-storage=false`: DOS has no threads. The programs are LE
+`-Dthread-local-storage=false`: the threads of `dpmi/thread.c` are
+cooperative, so the library needs no locks. The programs are LE
 executables in flat protected mode. The DOS/32A extender is the stub of
 each executable, so a program needs no separate extender or DPMI host.
 
@@ -252,6 +253,17 @@ address: the VGA memory is at `(char *)0xA0000`, and `MK_FP(seg, off)` of
   **`<dos.h>`** has the I/O ports (also `inportl` and `outportl`),
   `peek` and `poke` at a segment:offset, `delay`, `sound` and `_psp`.
   `<conio.h>` is the one of 16-bit DOS.
+- **Threads** (`<pthread.h>`, `dpmi/thread.c` and `dpmi/switch.S`). DOS
+  has no threads, so the library switches them. The threads are
+  cooperative: a thread runs until it calls a function that waits
+  (`pthread_join`, `pthread_mutex_lock` on a locked mutex,
+  `pthread_cond_wait`, `sched_yield`, `sleep`, `usleep` or
+  `nanosleep`). Each thread has a stack from `malloc` (64 KiB if the
+  attributes give no size). When no other thread can run, a wait gives
+  the time slice to the host (INT 2Fh, AX=1680h).
+- **Thread-local variables** use emulated TLS: clang calls
+  `__emutls_get_address` (`dpmi/emutls.c`), which keeps a copy of each
+  variable for each thread with a key of `<pthread.h>`.
 
 Not in 32-bit DOS: the far heap and huge memory (all memory is flat),
 `int86` with real-mode segment registers (use `__dpmi_int`), interrupt
