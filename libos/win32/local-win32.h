@@ -239,6 +239,16 @@ __WIN32_API __win32_bool   GetDiskFreeSpaceA(const char *root, __win32_dword *se
                                              __win32_dword *bytes_per_sector,
                                              __win32_dword *free_clusters,
                                              __win32_dword *total_clusters);
+__WIN32_API __win32_dword  GetLogicalDrives(void);
+__WIN32_API __win32_bool   LockFile(__win32_handle h, __win32_dword offset_low,
+                                    __win32_dword offset_high, __win32_dword n_low,
+                                    __win32_dword n_high);
+__WIN32_API __win32_bool   UnlockFile(__win32_handle h, __win32_dword offset_low,
+                                      __win32_dword offset_high, __win32_dword n_low,
+                                      __win32_dword n_high);
+__WIN32_API __win32_bool   Beep(__win32_dword frequency, __win32_dword ms);
+__WIN32_API int MultiByteToWideChar(unsigned int codepage, __win32_dword flags, const char *multi,
+                                    int nmulti, wchar_t *wide, int nwide);
 
 __WIN32_API void           GetSystemTime(struct __win32_systemtime *t);
 __WIN32_API __win32_bool   SystemTimeToFileTime(const struct __win32_systemtime *t,
@@ -266,6 +276,10 @@ __WIN32_API __win32_bool   GetExitCodeProcess(__win32_handle h, __win32_dword *s
 /* Set errno from a Win32 error code (GetLastError() if code is 0) and
  * return -1. */
 int                        __win32_error(__win32_dword code);
+
+/* A wide name as a name in the ANSI code page, in buf (PATH_MAX bytes).
+ * NULL with errno ENAMETOOLONG when it does not fit. */
+char                      *__win32_ansi_name(const wchar_t *wide, char *buf);
 
 /* Time: FILETIME counts 100 ns since 1601. */
 #define __WIN32_EPOCH_DIFF 116444736000000000LL /* 1601 to 1970 in 100 ns */

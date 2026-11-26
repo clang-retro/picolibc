@@ -39,18 +39,28 @@ has_os_fileio = true
 
 srcs_os_win32 = [
   'clock.c',
+  'conio.c',
   'ctors.c',
   'cxa_thread_atexit.c',
+  'direct.c',
   'dirent.c',
   'dllstart.c',
   'error.c',
   'fd.c',
   'files.c',
+  'findfile.c',
+  'fpu.c',
   'init.c',
   'keydtor.c',
   'lock.c',
   'lseek.c',
   'malloc.c',
+  'mscrt_io.c',
+  'mscrt_stat.c',
+  'mscrt_stdio.c',
+  'mscrt_stdlib.c',
+  'mscrt_string.c',
+  'mscrt_wchar.c',
   'open.c',
   'process.c',
   'read.c',
@@ -81,5 +91,6 @@ foreach f : srcs_os_win32_fallback
 endforeach
 
 if really_install
-  install_headers(['include/io.h', 'include/process.h'], install_dir: include_dir)
+  install_headers(['include/conio.h', 'include/direct.h', 'include/float.h', 'include/io.h',
+                   'include/process.h', 'include/tchar.h'], install_dir: include_dir)
 endif

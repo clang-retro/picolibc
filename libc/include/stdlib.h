@@ -458,6 +458,10 @@ void ignore_handler_s(const char * __restrict msg, void * __restrict ptr, __errn
 
 _END_STD_C
 
+#ifdef _WIN32
+#include <sys/_win32stdlib.h>
+#endif
+
 #ifdef __I86__
 #include <sys/_i86malloc.h>
 #endif

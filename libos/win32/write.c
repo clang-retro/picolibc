@@ -98,4 +98,4 @@ write(int fd, const void *buf, size_t count)
     return done;
 }
 
-ssize_t _write(int fd, const void *buf, size_t count) __attribute__((__alias__("write")));
+int _write(int fd, const void *buf, unsigned int count) __attribute__((__alias__("write")));

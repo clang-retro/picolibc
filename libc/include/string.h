@@ -346,6 +346,10 @@ __I86_OVERLOAD(char __far *, strstr, _fstrstr, (const char __far *__s, const cha
 
 _END_STD_C
 
+#ifdef _WIN32
+#include <sys/_win32string.h>
+#endif
+
 #ifdef __I86__
 #include <sys/_i86malloc.h>
 #endif

@@ -58,6 +58,32 @@ build script puts such a sysroot together. Programs link with
 - `_beginthreadex` and the rest of `<process.h>` start threads with
   `CreateThread`. `<io.h>` has `_get_osfhandle` and `_open_osfhandle`.
 - Error codes from `GetLastError` become errno values in `error.c`.
+- The library has the functions of the Microsoft C library that programs
+  for Windows use most, with the same names and rules:
+  - `<string.h>`, `<stdlib.h>`, `<stdio.h>`, `<wchar.h>` and
+    `<sys/stat.h>` declare them for `_WIN32` targets, from the
+    `sys/_win32*.h` headers: `_stricmp`, `_strdup`, `_itoa`, `_splitpath`,
+    `_fullpath`, `_putenv`, `_snprintf` (no NUL and -1 when the text does
+    not fit), `_wcsicmp`, `_stat` and `struct _stat`, and others. The old
+    names (`stricmp`, `strrev`, `ltoa` and others) are there unless the
+    program asks for strict ISO C.
+  - `<io.h>` has `_open`, `_read`, `_lseek`, `_filelength`, `_chsize`,
+    `_eof`, `_locking`, `_mktemp` and `_findfirst` with `_findnext`.
+  - `<direct.h>` has `_getcwd`, `_getdcwd`, `_mkdir`, `_getdrive`,
+    `_chdrive` and `_getdiskfree`.
+  - `<conio.h>` has `_getch`, `_kbhit`, `_putch`, `_cputs`, `_cgets` and
+    `_cprintf`, which use the console (`CONIN$` and `CONOUT$`).
+  - `<float.h>` adds `_controlfp`, `_control87`, `_clearfp`,
+    `_statusfp`, `_fpreset` and `_fpclass` to clang's `<float.h>`.
+  - `<tchar.h>` has the generic text names (`_TCHAR`, `_T`, `_tcslen`
+    and the others). With `_UNICODE` they are the wide functions. `_MBCS`
+    gives the byte functions, because the library has no `_mbs`
+    functions. `_tmain` with `_UNICODE` is `wmain`, which the start code
+    does not call.
+
+  The wide forms of the file functions other than `_wopen` and `_wfopen`
+  (`_wstat`, `_wmkdir`, `_wfindfirst` and the others) change the name to
+  the ANSI code page. `_umask` keeps the mask, but new files do not use it.
 
 `link` and `symlink` fail with `ENOSYS`, and there are no signals beyond
 `raise`.

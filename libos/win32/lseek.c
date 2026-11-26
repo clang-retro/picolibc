@@ -74,4 +74,6 @@ lseek(int fd, off_t offset, int whence)
     return (off_t)(((int64_t)high << 32) | low);
 }
 
-off_t _lseek(int fd, off_t offset, int whence) __attribute__((__alias__("lseek")));
+/* _lseeki64 is lseek, since off_t has 64 bits; _lseek, with a long
+ * offset, is in mscrt_io.c. */
+long long _lseeki64(int fd, long long offset, int whence) __attribute__((__alias__("lseek")));

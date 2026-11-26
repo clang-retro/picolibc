@@ -727,6 +727,10 @@ __printf_float(float f)
 
 _END_STD_C
 
+#ifdef _WIN32
+#include <sys/_win32stdio.h>
+#endif
+
 #if __SSP_FORTIFY_LEVEL > 0
 #include <ssp/stdio.h>
 #endif
