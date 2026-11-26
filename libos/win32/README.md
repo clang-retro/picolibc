@@ -43,7 +43,12 @@ build script puts such a sysroot together. Programs link with
   them) are native TLS, set up by Windows for every thread.
   `cxa_thread_atexit.c` runs C++ `thread_local` destructors when a thread
   ends, and `keydtor.c` runs destructors for `TlsAlloc` keys, which libc++
-  uses on Windows before Server 2003.
+  uses on Windows before Server 2003. Windows 9x does not run TLS
+  callbacks, so there the library runs them itself: a DLL from its entry
+  point, and a program when a thread that `_beginthreadex` or
+  `_beginthread` started returns or calls `_endthreadex` or `_endthread`.
+  On 9x, a thread that `CreateThread` starts and that ends with
+  `ExitThread` does not run its destructors.
 - Descriptors (`fd.c`) are a table of Win32 handles. Files open in text
   mode unless `O_BINARY`, `_fmode` or `setmode` say otherwise: `read`
   turns CR LF into LF and stops at Ctrl-Z, and `write` turns LF into

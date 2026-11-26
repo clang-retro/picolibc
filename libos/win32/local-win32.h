@@ -327,6 +327,19 @@ __win32_fdflags(int fd)
     return fd >= 0 && fd < __WIN32_MAX_FD ? __win32_fds[fd].flags : 0;
 }
 
+/* TLS callbacks, from tlssup.c. Windows 9x does not run them. */
+#define __WIN32_DLL_PROCESS_DETACH 0
+#define __WIN32_DLL_PROCESS_ATTACH 1
+#define __WIN32_DLL_THREAD_ATTACH  2
+#define __WIN32_DLL_THREAD_DETACH  3
+int                   __win32_is_9x(void);
+void                  __win32_tls_callbacks(void *module, __win32_dword reason);
+/* Set when this copy of the library is in a DLL (dllstart.c). */
+extern int            __win32_in_dll;
+/* Runs the thread exit work that Windows 9x leaves out, for a thread of
+ * a program that ends (thread.c). */
+void                  __win32_thread_end(void);
+
 /* Process startup, from start.c. */
 extern __win32_handle __win32_heap;
 void                  __win32_init(void);

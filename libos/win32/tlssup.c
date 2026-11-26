@@ -68,3 +68,23 @@ const struct tls_directory _tls_used __attribute__((__section__(".rdata$T"), __u
     0,
     0,
 };
+
+/* Not zero on Windows 95, 98 and ME (and Win32s), which have the high bit
+ * of the version set. */
+int
+__win32_is_9x(void)
+{
+    return (GetVersion() & 0x80000000) != 0;
+}
+
+/* Runs the TLS callbacks of this module for a reason (DLL_THREAD_DETACH
+ * and the others). Windows 9x does not run them, so the library runs them
+ * itself there: a DLL from its entry point, a program when one of its
+ * threads ends. */
+void
+__win32_tls_callbacks(void *module, __win32_dword reason)
+{
+    for (__win32_tls_callback *cb = &__xl_a + 1; cb < &__xl_z; cb++)
+        if (*cb)
+            (*cb)(module, reason, NULL);
+}
