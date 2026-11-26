@@ -52,6 +52,10 @@ extern "C" {
 extern unsigned short __msdos_psp;
 #define _psp __msdos_psp
 
+/* The arguments of main: argv[0] is the program's path. */
+extern int    __argc;
+extern char **__argv;
+
 /* Interrupts off and on. */
 static __inline__ void
 disable(void)

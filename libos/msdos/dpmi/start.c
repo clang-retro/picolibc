@@ -171,6 +171,11 @@ init_args(const char *psp, char **argv)
     return argc;
 }
 
+/* The arguments of main, for code that does not get them (as in the
+ * Microsoft C runtime). */
+int    __argc;
+char **__argv;
+
 /* Called by crt0 with the flat segments set up and the PSP selector
  * saved. */
 void
@@ -184,6 +189,8 @@ __msdos_start(void)
     int   argc = psp ? init_args(psp, argv) : 1;
     char *argv0 = psp ? init_environ(psp) : NULL;
     argv[0] = argv0 ? argv0 : (char *)"";
+    __argc = argc;
+    __argv = argv;
 #ifdef __INIT_FINI_ARRAY
     __libc_init_array();
 #endif
