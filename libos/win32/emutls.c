@@ -187,4 +187,5 @@ emutls_detach(void *module, __win32_dword reason, void *reserved)
 /* After the thread_local destructors (.CRT$XLC) and the TlsAlloc key
  * destructors (.CRT$XLD), which can still use thread-local variables. */
 static void(__attribute__((__stdcall__)) * const emutls_callback)(void *, __win32_dword, void *)
-    __attribute__((__section__(".CRT$XLY"), __used__)) = emutls_detach;
+    __attribute__((__section__(".CRT$XLY"), __used__))
+    = emutls_detach;

@@ -266,12 +266,12 @@ __WIN32_API void          EnterCriticalSection(struct __win32_critical_section *
 __WIN32_API void          LeaveCriticalSection(struct __win32_critical_section *cs);
 __WIN32_API void          DeleteCriticalSection(struct __win32_critical_section *cs);
 
-__WIN32_API __win32_bool CreateProcessA(const char *application, char *command_line,
-                                        struct __win32_security_attributes *process_security,
-                                        struct __win32_security_attributes *thread_security,
-                                        __win32_bool inherit, __win32_dword flags, void *env,
-                                        const char *directory, struct __win32_startup_info *startup,
-                                        struct __win32_process_info *info);
+__WIN32_API __win32_bool  CreateProcessA(const char *application, char *command_line,
+                                         struct __win32_security_attributes *process_security,
+                                         struct __win32_security_attributes *thread_security,
+                                         __win32_bool inherit, __win32_dword flags, void *env,
+                                         const char *directory, struct __win32_startup_info *startup,
+                                         struct __win32_process_info *info);
 __WIN32_API __win32_dword WaitForSingleObject(__win32_handle h, __win32_dword ms);
 __WIN32_API __win32_bool  GetExitCodeProcess(__win32_handle h, __win32_dword *status);
 
