@@ -58,7 +58,10 @@ alloc(size_t size, size_t align, unsigned long flags)
 {
     if (align < 8)
         align = 8;
-    unsigned long total = size + sizeof(struct block) + align - 8;
+    /* Kickstart's AllocMem returns 8-byte aligned memory, but other
+     * implementations (vamos) return only 4-byte aligned memory. Do not
+     * assume an alignment: reserve align - 1 bytes to align the block. */
+    unsigned long total = size + sizeof(struct block) + align - 1;
     if (size > 0x7fffffff - sizeof(struct block) - align) {
         errno = ENOMEM;
         return NULL;
@@ -68,7 +71,7 @@ alloc(size_t size, size_t align, unsigned long flags)
         errno = ENOMEM;
         return NULL;
     }
-    /* AllocMem returns 8-byte aligned memory, and the header is 16 bytes. */
+    /* The header is 16 bytes, directly below the aligned user block. */
     uintptr_t user = ((uintptr_t)base + sizeof(struct block) + align - 1) & ~(uintptr_t)(align - 1);
     struct block *b = (struct block *)user - 1;
     b->size = total;
