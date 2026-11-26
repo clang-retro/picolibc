@@ -43,17 +43,35 @@
 #include <stdint.h>
 #include <sys/types.h>
 
+#ifdef __DPMI__
+/* 32-bit DOS: flat protected mode under a DPMI DOS extender (DOS/32A).
+ * The extender takes the DOS calls with pointers in DS:EDX, DS:ESI and
+ * ES:EDI, where DS and ES are the flat data selector. Thus a pointer goes
+ * to DOS as a 32-bit offset, and ds and es are not used. */
+struct __msdos_regs {
+    uint32_t ax, bx, cx, dx, si, di;
+    uint16_t ds, es;
+};
+#define __MSDOS_SEG(p) ((uint16_t)0)
+#define __MSDOS_OFF(p) ((uint32_t)(uintptr_t)(const void *)(p))
+/* There are no far or huge pointers: all memory is in the flat segment. */
+#define __far
+#define __huge
+#else
 /* Registers for a DOS call (INT 21h). A ds or es of 0 means the data
  * segment (DGROUP). On return es holds the ES that DOS returned. */
 struct __msdos_regs {
     uint16_t ax, bx, cx, dx, si, di, ds, es;
 };
+#endif
 
 /* The offset and segment of a pointer to pass to DOS. With near data
  * pointers the segment is DGROUP, given as 0. A far pointer as an integer
  * is segment:offset; a huge pointer as an integer is its linear address,
  * given to DOS normalized (offset 0 to 15). */
-#if defined(__HUGE__)
+#if defined(__DPMI__)
+/* See above. */
+#elif defined(__HUGE__)
 #define __MSDOS_SEG(p) ((uint16_t)((uint32_t)(const void *)(p) >> 4))
 #define __MSDOS_OFF(p) ((uint16_t)((uint32_t)(const void *)(p) & 15))
 #elif defined(__COMPACT__) || defined(__LARGE__)
@@ -83,11 +101,23 @@ extern uint16_t __msdos_psp;
 /* The stack top that crt0 found, in the small and medium models. */
 extern uint16_t __msdos_stack_top;
 
+#ifdef __DPMI__
+/* Call INT 31h (the DPMI host) with *r, as __msdos_int21 calls DOS. */
+int             __dpmi_int31(struct __msdos_regs *r);
+/* The selector of the PSP, which DOS/32A gives the program in ES. */
+extern uint16_t __msdos_psp_sel;
+/* The transfer buffer: DOS memory for the DOS calls that the extender
+ * does not translate. Its real-mode segment, and its flat address. */
+#define __DPMI_TB_SIZE 4096
+extern uint16_t __dpmi_tb_seg;
+extern char    *__dpmi_tb;
+#endif
+
 /* Set errno from a DOS error code and return -1. */
-int             __msdos_error(uint16_t code);
+int __msdos_error(uint16_t code);
 
 /* Whether a handle is a character device (console, printer, NUL). */
-int             __msdos_isdevice(int fd);
+int __msdos_isdevice(int fd);
 
 /* Per-handle state that DOS does not keep. DOS has 20 handles per
  * program by default. */

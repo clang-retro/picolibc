@@ -125,6 +125,29 @@ absorb32(uint32_t v)
 static int
 has_tsc(void)
 {
+#ifdef __DPMI__
+    /* 32-bit DOS: CPUID exists if the ID flag (EFLAGS bit 21) can be
+     * changed. CPUID leaf 1: EDX bit 4 is the TSC. */
+    uint32_t a, b;
+    __asm__ volatile("pushfl\n\t"
+                     "popl %0\n\t"
+                     "movl %0, %1\n\t"
+                     "xorl $0x200000, %0\n\t"
+                     "pushl %0\n\t"
+                     "popfl\n\t"
+                     "pushfl\n\t"
+                     "popl %0\n\t"
+                     "pushl %1\n\t"
+                     "popfl"
+                     : "=&r"(a), "=&r"(b)
+                     :
+                     : "cc");
+    if (!((a ^ b) & 0x200000))
+        return 0;
+    uint32_t eax = 1, ebx, ecx = 0, edx;
+    __asm__ volatile("cpuid" : "+a"(eax), "=b"(ebx), "+c"(ecx), "=d"(edx));
+    return (edx & 0x10) != 0;
+#else
 #ifdef __WINDOWS__
     /* The FLAGS test below is for real mode; Windows knows the CPU. */
     if (!(GetWinFlags() & (WF_CPU386 | WF_CPU486)))
@@ -184,6 +207,7 @@ has_tsc(void)
                      :
                      : "ax", "cx", "cc");
     return (features & 0x10) != 0;
+#endif /* __DPMI__ */
 }
 
 static void
@@ -192,12 +216,21 @@ absorb_tsc(void)
     uint16_t t0, t1, t2, t3;
     if (!tsc)
         return;
+#ifdef __DPMI__
+    uint32_t lo, hi;
+    __asm__ volatile("rdtsc" : "=a"(lo), "=d"(hi));
+    t0 = (uint16_t)lo;
+    t1 = (uint16_t)(lo >> 16);
+    t2 = (uint16_t)hi;
+    t3 = (uint16_t)(hi >> 16);
+#else
     __asm__ volatile(".byte 0x0f, 0x31\n\t" /* rdtsc */
                      "movw %%ax, %%cx\n\t"
                      ".byte 0x66, 0xc1, 0xe8, 0x10\n\t" /* shrl $16, %eax */
                      "movw %%dx, %%bx\n\t"
                      ".byte 0x66, 0xc1, 0xea, 0x10" /* shrl $16, %edx */
                      : "=c"(t0), "=a"(t1), "=b"(t2), "=d"(t3));
+#endif
     absorb(t0);
     absorb(t1);
     absorb(t2);
@@ -231,7 +264,14 @@ collect(size_t len)
     __msdos_time(&sec, &centi);
     absorb32((uint32_t)sec);
     absorb(centi);
+#ifdef __DPMI__
+    uint32_t esp;
+    __asm__("movw %%ss, %0\n\tmovl %%esp, %1" : "=r"(ss), "=r"(esp));
+    sp = (uint16_t)esp;
+    absorb((uint16_t)(esp >> 16));
+#else
     __asm__("movw %%ss, %0\n\tmovw %%sp, %1" : "=r"(ss), "=r"(sp));
+#endif
     absorb(ss);
     absorb(sp);
 #ifdef __WINDOWS__

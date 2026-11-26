@@ -216,3 +216,62 @@ startup code and the heap differ:
   which runs the constructors and calls `LibMain` (a default one returning
   1 is in `libmain.c`). `WEP` (`wep.c`) runs the destructors.
 - `_exit` is INT 21h function 4Ch, which Windows handles for programs.
+
+## 32-bit DOS
+
+With the cross file `scripts/cross-clang-i386-msdos.txt` (host CPU family
+`x86`), `-Dos-msdos=true` builds the library for 32-bit DOS programs
+(`i386-pc-msdos`). Build it with `-Dsingle-thread=true` and
+`-Dthread-local-storage=false`: the threads of `dpmi/thread.c` are
+cooperative, so the library needs no locks. The programs are LE
+executables in flat protected mode. The DOS/32A extender is the stub of
+each executable, so a program needs no separate extender or DPMI host.
+
+DOS/32A starts the program with CS, DS and SS flat (base 0). Thus a
+pointer is a linear address, and DOS memory below 1 MB is at its linear
+address: the VGA memory is at `(char *)0xA0000`, and `MK_FP(seg, off)` of
+`<i86.h>` gives `seg * 16 + off`.
+
+- **System calls.** The C files of 16-bit DOS make the DOS calls, with
+  32-bit registers (`struct __msdos_regs` in `local-msdos.h`). DOS/32A
+  translates the DOS calls that have pointers in DS:EDX, DS:ESI and
+  ES:EDI. The calls that it does not translate (INT 21h function 60h)
+  go to real mode through a transfer buffer in DOS memory
+  (`dpmi/int21.c`).
+- **Startup** (`dpmi/crt0.S`, `dpmi/start.c`). crt0 keeps the PSP
+  selector that DOS/32A gives in ES. The start code reads the command
+  line from the PSP, and the environment through its selector at
+  PSP:2Ch.
+- **The heap** is one block of DPMI memory (function 0501h): the largest
+  free block less 1/8 (at most 256 KiB), up to 256 MiB.
+- **`<dpmi.h>`** has DPMI functions with the names of DJGPP: real-mode
+  interrupts with `__dpmi_regs`, DOS memory, physical address mapping
+  (for a linear frame buffer or the registers of a PCI card), memory
+  locks and interrupt vectors.
+- **`<i86.h>`** has `int386`, `int386x`, `intdos`, `intdosx` and
+  `segread`, as in Open Watcom (`int86` is a name for `int386`).
+  **`<dos.h>`** has the I/O ports (also `inportl` and `outportl`),
+  `peek` and `poke` at a segment:offset, `delay`, `sound` and `_psp`.
+  `<conio.h>` is the one of 16-bit DOS.
+- **Threads** (`<pthread.h>`, `dpmi/thread.c` and `dpmi/switch.S`). DOS
+  has no threads, so the library switches them. The threads are
+  cooperative: a thread runs until it calls a function that waits
+  (`pthread_join`, `pthread_mutex_lock` on a locked mutex,
+  `pthread_cond_wait`, `sched_yield`, `sleep`, `usleep` or
+  `nanosleep`). Each thread has a stack from `malloc` (64 KiB if the
+  attributes give no size). When no other thread can run, a wait gives
+  the time slice to the host (INT 2Fh, AX=1680h).
+- **Atomic operations** on 64-bit values and the generic `__atomic_*`
+  calls are in `dpmi/atomic.c`. The threads are cooperative, so plain
+  operations are atomic. Do not use them on a value that an interrupt
+  handler also changes.
+- **Thread-local variables** use emulated TLS: clang calls
+  `__emutls_get_address` (`dpmi/emutls.c`), which keeps a copy of each
+  variable for each thread with a key of `<pthread.h>`.
+
+Not in 32-bit DOS: the far heap and huge memory (all memory is flat),
+`int86` with real-mode segment registers (use `__dpmi_int`), interrupt
+handlers with `_dos_setvect`, resident programs and `execve`.
+
+The programs use x87 instructions for floating point. A 386 or 486SX
+without a coprocessor needs `-msoft-float`.

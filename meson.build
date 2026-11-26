@@ -1756,6 +1756,13 @@ if fs.is_dir(machine_dir)
   inc_dirs = [machine_dir] + inc_dirs
 endif
 
+# 32-bit DOS: dos.h, i86.h and dpmi.h of libos/msdos/dpmi first, and
+# conio.h and io.h, which are the same as in 16-bit DOS, from
+# libc/machine/i8086 last.
+if get_option('os-msdos') and host_cpu_family == 'x86'
+  inc_dirs = ['libos/msdos/dpmi/include'] + inc_dirs + ['libc/machine/i8086']
+endif
+
 inc = include_directories(inc_dirs)
 
 inc_args = []

@@ -68,6 +68,28 @@ int        _setmode(int fd, int mode);
 
 _END_STD_C
 
-#endif /* _WIN32 */
+#elif defined(__MSDOS__)
+
+/* 32-bit DOS: the text and binary modes of 16-bit DOS (see
+ * libc/machine/i8086/sys/fcntl.h). A file opened with neither gets the
+ * mode in _fmode, which starts as O_TEXT. */
+#define _FTEXT    0x0004
+#define _FBINARY  0x0010
+#define O_TEXT    _FTEXT
+#define O_BINARY  _FBINARY
+#define _O_TEXT   O_TEXT
+#define _O_BINARY O_BINARY
+
+_BEGIN_STD_C
+
+extern int _fmode;
+
+/* Set a handle to O_TEXT or O_BINARY. Returns the previous mode, or -1. */
+int        setmode(int fd, int mode);
+int        _setmode(int fd, int mode);
+
+_END_STD_C
+
+#endif /* _WIN32, __MSDOS__ */
 
 #endif /* _SYS_FCNTL_H_ */

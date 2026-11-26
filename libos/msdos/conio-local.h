@@ -42,6 +42,11 @@
 #include <i86.h>
 #include <stdint.h>
 
+#ifdef __DPMI__
+/* 32-bit DOS is flat: MK_FP gives a near pointer. */
+#define __far
+#endif
+
 struct __conio {
     uint8_t  ready;
     /* The window, counted from 0, inclusive. */
