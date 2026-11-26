@@ -261,6 +261,10 @@ address: the VGA memory is at `(char *)0xA0000`, and `MK_FP(seg, off)` of
   `nanosleep`). Each thread has a stack from `malloc` (64 KiB if the
   attributes give no size). When no other thread can run, a wait gives
   the time slice to the host (INT 2Fh, AX=1680h).
+- **Atomic operations** on 64-bit values and the generic `__atomic_*`
+  calls are in `dpmi/atomic.c`. The threads are cooperative, so plain
+  operations are atomic. Do not use them on a value that an interrupt
+  handler also changes.
 - **Thread-local variables** use emulated TLS: clang calls
   `__emutls_get_address` (`dpmi/emutls.c`), which keeps a copy of each
   variable for each thread with a key of `<pthread.h>`.
