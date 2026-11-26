@@ -80,7 +80,7 @@ _enable(void)
  * result is a near pointer. FP_SEG and FP_OFF give back a segment and an
  * offset for a pointer below 1 MB. */
 #ifndef MK_FP
-#define MK_FP(__s, __o)                                                                    \
+#define MK_FP(__s, __o)                                                              \
     ((void *)((((unsigned long)(unsigned short)(__s)) << 4) + (unsigned long)(__o)))
 #define FP_SEG(__p) ((unsigned short)((unsigned long)(void *)(__p) >> 4))
 #define FP_OFF(__p) ((unsigned short)((unsigned long)(void *)(__p) & 15))
@@ -98,13 +98,13 @@ struct WORDREGS {
     unsigned int   cflag;
 };
 struct BYTEREGS {
-    unsigned char al, ah;
+    unsigned char  al, ah;
     unsigned short __eax_hi;
-    unsigned char bl, bh;
+    unsigned char  bl, bh;
     unsigned short __ebx_hi;
-    unsigned char cl, ch;
+    unsigned char  cl, ch;
     unsigned short __ecx_hi;
-    unsigned char dl, dh;
+    unsigned char  dl, dh;
     unsigned short __edx_hi;
 };
 union REGS {

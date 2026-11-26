@@ -108,6 +108,5 @@ segread(struct SREGS *sr)
             "movw %%ds, %3\n\t"
             "movw %%fs, %4\n\t"
             "movw %%gs, %5"
-            : "=m"(sr->es), "=m"(sr->cs), "=m"(sr->ss), "=m"(sr->ds), "=m"(sr->fs),
-              "=m"(sr->gs));
+            : "=m"(sr->es), "=m"(sr->cs), "=m"(sr->ss), "=m"(sr->ds), "=m"(sr->fs), "=m"(sr->gs));
 }

@@ -41,7 +41,7 @@
 #include <dpmi.h>
 #include <string.h>
 
-int __msdos_int21_pm(struct __msdos_regs *r);
+int      __msdos_int21_pm(struct __msdos_regs *r);
 
 uint16_t __dpmi_tb_seg;
 char    *__dpmi_tb;

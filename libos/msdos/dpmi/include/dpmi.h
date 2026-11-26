@@ -86,7 +86,7 @@ typedef struct {
 
 /* A protected-mode address: a selector and an offset. */
 typedef struct {
-    unsigned long offset32;
+    unsigned long  offset32;
     unsigned short selector;
 } __dpmi_paddr;
 
@@ -96,53 +96,53 @@ extern unsigned short __dpmi_error;
 /* Calls real-mode interrupt vector with the registers in *regs, and stores
  * the result registers. regs->x.ss and regs->x.sp 0 use a stack of the
  * host. Gives 0, or -1 on an error. */
-int __dpmi_simulate_real_mode_interrupt(int vector, __dpmi_regs *regs);
+int                   __dpmi_simulate_real_mode_interrupt(int vector, __dpmi_regs *regs);
 /* The same as __dpmi_simulate_real_mode_interrupt. */
-int __dpmi_int(int vector, __dpmi_regs *regs);
+int                   __dpmi_int(int vector, __dpmi_regs *regs);
 
 /* Allocates paragraphs paragraphs of DOS memory (below 1 MB). Gives its
  * real-mode segment, and its selector in *selector, or -1 on an error.
  * The memory is also at the linear address segment * 16. */
-int __dpmi_allocate_dos_memory(int paragraphs, int *selector);
+int                   __dpmi_allocate_dos_memory(int paragraphs, int *selector);
 /* Frees the DOS memory of a selector. Gives 0, or -1 on an error. */
-int __dpmi_free_dos_memory(int selector);
+int                   __dpmi_free_dos_memory(int selector);
 
 /* Allocates info->size bytes. Sets info->handle and info->address. Gives
  * 0, or -1 on an error. */
-int __dpmi_allocate_memory(__dpmi_meminfo *info);
+int                   __dpmi_allocate_memory(__dpmi_meminfo *info);
 /* Frees the memory of a handle. Gives 0, or -1 on an error. */
-int __dpmi_free_memory(unsigned long handle);
+int                   __dpmi_free_memory(unsigned long handle);
 /* Gives the free memory in *info. Gives 0, or -1 on an error. */
-int __dpmi_get_free_memory_information(__dpmi_free_mem_info *info);
+int                   __dpmi_get_free_memory_information(__dpmi_free_mem_info *info);
 
 /* Maps info->size bytes at the physical address info->address (for
  * example the frame buffer or the registers of a PCI card), and sets
  * info->address to the linear address. Gives 0, or -1 on an error. */
-int __dpmi_physical_address_mapping(__dpmi_meminfo *info);
+int                   __dpmi_physical_address_mapping(__dpmi_meminfo *info);
 /* Frees a mapping (DPMI 1.0; DOS/32A has it). info->address is the
  * linear address. Gives 0, or -1 on an error. */
-int __dpmi_free_physical_address_mapping(__dpmi_meminfo *info);
+int                   __dpmi_free_physical_address_mapping(__dpmi_meminfo *info);
 
 /* Locks and unlocks a linear region, which a handler of a hardware
  * interrupt uses. Gives 0, or -1 on an error. */
-int __dpmi_lock_linear_region(__dpmi_meminfo *info);
-int __dpmi_unlock_linear_region(__dpmi_meminfo *info);
+int                   __dpmi_lock_linear_region(__dpmi_meminfo *info);
+int                   __dpmi_unlock_linear_region(__dpmi_meminfo *info);
 
 /* Gives the base address of a selector in *addr. Gives 0, or -1. */
-int __dpmi_get_segment_base_address(int selector, unsigned long *addr);
+int                   __dpmi_get_segment_base_address(int selector, unsigned long *addr);
 
 /* Gets and sets the protected-mode handler of an interrupt. Give 0, or
  * -1 on an error. */
-int __dpmi_get_protected_mode_interrupt_vector(int vector, __dpmi_paddr *address);
-int __dpmi_set_protected_mode_interrupt_vector(int vector, __dpmi_paddr *address);
+int                   __dpmi_get_protected_mode_interrupt_vector(int vector, __dpmi_paddr *address);
+int                   __dpmi_set_protected_mode_interrupt_vector(int vector, __dpmi_paddr *address);
 
 /* Gets and sets the real-mode handler of an interrupt (segment:offset in
  * address->selector:address->offset32). Give 0, or -1 on an error. */
-int __dpmi_get_real_mode_interrupt_vector(int vector, __dpmi_paddr *address);
-int __dpmi_set_real_mode_interrupt_vector(int vector, __dpmi_paddr *address);
+int                   __dpmi_get_real_mode_interrupt_vector(int vector, __dpmi_paddr *address);
+int                   __dpmi_set_real_mode_interrupt_vector(int vector, __dpmi_paddr *address);
 
 /* Gives the DPMI version: major * 256 + minor. */
-int __dpmi_get_version(void);
+int                   __dpmi_get_version(void);
 
 #ifdef __cplusplus
 }

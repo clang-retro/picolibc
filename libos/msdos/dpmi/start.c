@@ -42,9 +42,9 @@
 #include <string.h>
 #include <sys/_initfini.h>
 
-uint16_t __msdos_psp;
-uint16_t __msdos_psp_sel;
-char   **environ;
+uint16_t   __msdos_psp;
+uint16_t   __msdos_psp_sel;
+char     **environ;
 
 extern int main(int, char **, char **);
 
@@ -143,7 +143,7 @@ init_args(const char *psp, char **argv)
     memcpy(tail, psp + 0x81, len);
     tail[len] = '\0';
 
-    int argc = 1;
+    int   argc = 1;
     char *in = tail, *out = tail;
     while (argc < MAX_ARGS) {
         while (*in == ' ' || *in == '\t' || *in == '\r')

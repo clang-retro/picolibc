@@ -114,10 +114,10 @@ extern char    *__dpmi_tb;
 #endif
 
 /* Set errno from a DOS error code and return -1. */
-int             __msdos_error(uint16_t code);
+int __msdos_error(uint16_t code);
 
 /* Whether a handle is a character device (console, printer, NUL). */
-int             __msdos_isdevice(int fd);
+int __msdos_isdevice(int fd);
 
 /* Per-handle state that DOS does not keep. DOS has 20 handles per
  * program by default. */

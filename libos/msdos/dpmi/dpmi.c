@@ -195,9 +195,8 @@ __dpmi_get_protected_mode_interrupt_vector(int vector, __dpmi_paddr *address)
 int
 __dpmi_set_protected_mode_interrupt_vector(int vector, __dpmi_paddr *address)
 {
-    struct __msdos_regs r = {
-        .ax = 0x0205, .bx = (uint8_t)vector, .cx = address->selector, .dx = address->offset32
-    };
+    struct __msdos_regs r
+        = { .ax = 0x0205, .bx = (uint8_t)vector, .cx = address->selector, .dx = address->offset32 };
     return call(&r);
 }
 
@@ -217,9 +216,10 @@ __dpmi_get_real_mode_interrupt_vector(int vector, __dpmi_paddr *address)
 int
 __dpmi_set_real_mode_interrupt_vector(int vector, __dpmi_paddr *address)
 {
-    struct __msdos_regs r = {
-        .ax = 0x0201, .bx = (uint8_t)vector, .cx = address->selector, .dx = address->offset32 & 0xffff
-    };
+    struct __msdos_regs r = { .ax = 0x0201,
+                              .bx = (uint8_t)vector,
+                              .cx = address->selector,
+                              .dx = address->offset32 & 0xffff };
     return call(&r);
 }
 
