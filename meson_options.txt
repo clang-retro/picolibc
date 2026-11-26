@@ -142,6 +142,8 @@ option('os-amigaos', type: 'boolean', value: false,
        description: 'Include libos/amigaos in libc: AmigaOS startup code, malloc and system calls (m68k).')
 option('os-win32', type: 'boolean', value: false,
        description: 'Include libos/win32 in libc: Win32 startup code, malloc and system calls on kernel32 (i386 and x86_64 Windows).')
+option('win32-emutls', type: 'boolean', value: false,
+       description: 'With os-win32: build with -femulated-tls, for DLLs that LoadLibrary loads on Windows before Vista (no TLS directory).')
 option('os-tos', type: 'boolean', value: false,
        description: 'Include libos/tos in libc: Atari TOS (GEMDOS) startup code and system calls (m68k).')
 option('os-irix', type: 'boolean', value: false,

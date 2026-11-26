@@ -258,7 +258,9 @@ __WIN32_API __win32_bool   QueryPerformanceCounter(int64_t *count);
 __WIN32_API __win32_bool   QueryPerformanceFrequency(int64_t *frequency);
 __WIN32_API void           Sleep(__win32_dword ms);
 
+__WIN32_API __win32_dword  TlsAlloc(void);
 __WIN32_API void          *TlsGetValue(__win32_dword key);
+__WIN32_API __win32_bool   TlsSetValue(__win32_dword key, void *value);
 __WIN32_API void           InitializeCriticalSection(struct __win32_critical_section *cs);
 __WIN32_API void           EnterCriticalSection(struct __win32_critical_section *cs);
 __WIN32_API void           LeaveCriticalSection(struct __win32_critical_section *cs);
@@ -334,6 +336,18 @@ __win32_fdflags(int fd)
 #define __WIN32_DLL_THREAD_DETACH  3
 int                   __win32_is_9x(void);
 void                  __win32_tls_callbacks(void *module, __win32_dword reason);
+/* Not zero when the library itself must run the TLS callbacks of its
+ * module: on Windows 9x, and always in the emulated TLS build
+ * (-Dwin32-emutls=true), whose modules have no TLS directory. */
+static inline int
+__win32_runs_tls_callbacks(void)
+{
+#ifdef __WIN32_EMUTLS
+    return 1;
+#else
+    return __win32_is_9x();
+#endif
+}
 /* Set when this copy of the library is in a DLL (dllstart.c). */
 extern int            __win32_in_dll;
 /* Runs the thread exit work that Windows 9x leaves out, for a thread of

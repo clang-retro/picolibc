@@ -375,6 +375,13 @@ if thread_local_storage
   c_args += [tls_arg]
 endif
 
+# The emulated TLS build of libos/win32: thread-local variables go
+# through __emutls_get_address (libos/win32/emutls.c), and the modules
+# have no TLS directory.
+if get_option('os-win32') and get_option('win32-emutls')
+  c_args += ['-femulated-tls', '-D__WIN32_EMUTLS']
+endif
+
 if get_option('analyzer')
   c_args += cc.get_supported_arguments(['-fanalyzer'])
 endif

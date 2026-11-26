@@ -47,13 +47,14 @@
  * thread that CreateThread starts and that ends with ExitThread does not.
  */
 
-/* Runs the TLS callbacks for DLL_THREAD_DETACH on Windows 9x, in a
- * program. A DLL gets DLL_THREAD_DETACH in its entry point, which runs
- * them (dllstart.c). */
+/* Runs the TLS callbacks for DLL_THREAD_DETACH in a program, where
+ * Windows does not: on Windows 9x, and in the emulated TLS build. A DLL
+ * gets DLL_THREAD_DETACH in its entry point, which runs them
+ * (dllstart.c). */
 void
 __win32_thread_end(void)
 {
-    if (!__win32_in_dll && __win32_is_9x())
+    if (!__win32_in_dll && __win32_runs_tls_callbacks())
         __win32_tls_callbacks(GetModuleHandleA(NULL), __WIN32_DLL_THREAD_DETACH);
 }
 

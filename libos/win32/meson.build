@@ -45,6 +45,7 @@ srcs_os_win32 = [
   'direct.c',
   'dirent.c',
   'dllstart.c',
+  'emutls.c',
   'error.c',
   'fd.c',
   'files.c',

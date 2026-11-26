@@ -47,13 +47,17 @@
 typedef void(__attribute__((__stdcall__))
              * __win32_tls_callback)(void *module, __win32_dword reason, void *reserved);
 
-unsigned long        _tls_index = 0;
-
-char                 _tls_start __attribute__((__section__(".tls"), __used__)) = 0;
-char                 _tls_end __attribute__((__section__(".tls$ZZZ"), __used__)) = 0;
-
+/* The emulated TLS build (-Dwin32-emutls=true) keeps thread-local
+ * variables in emutls.c, so its modules have no TLS directory, which
+ * LoadLibrary before Vista does not set up. Only the callbacks stay. */
 __win32_tls_callback __xl_a __attribute__((__section__(".CRT$XLA"), __used__)) = 0;
 __win32_tls_callback __xl_z __attribute__((__section__(".CRT$XLZ"), __used__)) = 0;
+
+#ifndef __WIN32_EMUTLS
+unsigned long _tls_index = 0;
+
+char          _tls_start __attribute__((__section__(".tls"), __used__)) = 0;
+char          _tls_end __attribute__((__section__(".tls$ZZZ"), __used__)) = 0;
 
 struct tls_directory {
     uintptr_t     start, end, index, callbacks;
@@ -68,6 +72,7 @@ const struct tls_directory _tls_used __attribute__((__section__(".rdata$T"), __u
     0,
     0,
 };
+#endif
 
 /* Not zero on Windows 95, 98 and ME (and Win32s), which have the high bit
  * of the version set. */

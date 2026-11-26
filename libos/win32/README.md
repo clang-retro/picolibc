@@ -40,7 +40,8 @@ build script puts such a sysroot together. Programs link with
   before `DllMain` and its atexit functions and destructors when it is
   unloaded.
 - `tlssup.c` is the TLS directory, so `__thread` variables (errno among
-  them) are native TLS, set up by Windows for every thread.
+  them) are native TLS, set up by Windows for every thread (see
+  [Emulated TLS](#emulated-tls) for the other build).
   `cxa_thread_atexit.c` runs C++ `thread_local` destructors when a thread
   ends, and `keydtor.c` runs destructors for `TlsAlloc` keys, which libc++
   uses on Windows before Server 2003. Windows 9x does not run TLS
@@ -95,5 +96,26 @@ build script puts such a sysroot together. Programs link with
 
 The library's thread-local variables are native TLS. Windows before Vista
 sets that up only for the program and the DLLs it loads at startup, not
-for a DLL loaded later with `LoadLibrary`, so on those versions such a DLL
-should not be linked with this library.
+for a DLL loaded later with `LoadLibrary`.
+
+## Emulated TLS
+
+For a DLL that `LoadLibrary` loads before Vista, build the library a
+second time with `-Dwin32-emutls=true`, and compile the DLL with
+`-femulated-tls`. In this build:
+
+- All thread-local variables go through `__emutls_get_address`
+  (`emutls.c`). Each variable gets an index at its first use. Each thread
+  keeps its objects in an array in one `TlsAlloc` slot. This works in a
+  DLL on every Windows version.
+- `tlssup.c` makes no TLS directory. Thus Windows does not run the TLS
+  callbacks. The DLL entry point runs them for each thread that starts
+  and ends, and at unload. A program runs them when a thread that
+  `_beginthreadex` or `_beginthread` started ends.
+- When a thread ends, a callback frees its objects. This callback runs
+  after the `thread_local` and key destructors.
+
+The normal build also has `emutls.c`. The linker uses it only for code
+that is compiled with `-femulated-tls`. compiler-rt's own
+`__emutls_get_address` calls the mingw-w64 C runtime. `-lc` comes before
+the builtins on the link line, thus the linker uses this one.
