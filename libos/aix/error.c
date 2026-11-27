@@ -44,17 +44,28 @@ static int
 aix_errno(int e)
 {
     switch (e) {
-    case 35: return ENOMSG;
-    case 36: return EIDRM;
-    case 45: return EDEADLK;
-    case 49: return ENOLCK;
-    case 52: return ESTALE;
-    case 85: return ELOOP;
-    case 86: return ENAMETOOLONG;
-    case 87: return ENOTEMPTY;
-    case 109: return ENOSYS;
-    case 127: return EOVERFLOW;
-    default: return e > 0 && e <= 34 ? e : EINVAL;
+    case 35:
+        return ENOMSG;
+    case 36:
+        return EIDRM;
+    case 45:
+        return EDEADLK;
+    case 49:
+        return ENOLCK;
+    case 52:
+        return ESTALE;
+    case 85:
+        return ELOOP;
+    case 86:
+        return ENAMETOOLONG;
+    case 87:
+        return ENOTEMPTY;
+    case 109:
+        return ENOSYS;
+    case 127:
+        return EOVERFLOW;
+    default:
+        return e > 0 && e <= 34 ? e : EINVAL;
     }
 }
 

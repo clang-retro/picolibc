@@ -112,7 +112,7 @@ struct __aix_timestruc {
 
 #define __AIX_TIMEOFDAY 9
 
-int gettimer(int timer, struct __aix_timestruc *value);
+int                 gettimer(int timer, struct __aix_timestruc *value);
 
 /*
  * The kernel stores the AIX error number of a failed call in the exported
@@ -121,12 +121,12 @@ int gettimer(int timer, struct __aix_timestruc *value);
  * so a failure with no number can be given EIO.
  */
 extern volatile int __aix_kernel_errno __asm__("errno");
-long __aix_result(long r);
+long                __aix_result(long r);
 
-#define __aix_call(expr)                                                      \
-    ({                                                                        \
-        __aix_kernel_errno = 0;                                               \
-        __aix_result((long)(expr));                                           \
+#define __aix_call(expr)            \
+    ({                              \
+        __aix_kernel_errno = 0;     \
+        __aix_result((long)(expr)); \
     })
 
 #endif /* _LOCAL_AIX_H_ */
