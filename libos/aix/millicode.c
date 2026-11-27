@@ -34,33 +34,76 @@
  */
 
 /*
- * clang on AIX lowers block moves and fills to the libc "millicode"
- * entry points ___memmove, ___memset and ___bzero, which AIX's libc
- * provides. no_builtin keeps the calls below from being turned back into
- * the same entry points.
+ * clang on AIX calls these string and memory functions by the names of
+ * the "millicode" entry points AIX's libc provides (___memset and so on).
+ * no_builtin keeps the calls below from being turned back into the same
+ * entry points.
  */
 
+#define _DEFAULT_SOURCE
 #include <stddef.h>
 #include <string.h>
 
-void *___memmove(void *dst, const void *src, size_t n);
-void *___memset(void *dst, int c, size_t n);
-void  ___bzero(void *dst, size_t n);
+void  *___memccpy(void *dst, const void *src, int c, size_t n);
+int    ___memcmp(const void *a, const void *b, size_t n);
+void  *___memmove(void *dst, const void *src, size_t n);
+void  *___memset(void *dst, int c, size_t n);
+void   ___bzero(void *dst, size_t n);
+int    ___strcmp(const char *a, const char *b);
+char  *___strcpy(char *dst, const char *src);
+size_t ___strlen(const char *s);
+char  *___strstr(const char *s, const char *find);
 
-__attribute__((no_builtin("memmove"))) void *
+__attribute__((no_builtin)) void *
+___memccpy(void *dst, const void *src, int c, size_t n)
+{
+    return memccpy(dst, src, c, n);
+}
+
+__attribute__((no_builtin)) int
+___memcmp(const void *a, const void *b, size_t n)
+{
+    return memcmp(a, b, n);
+}
+
+__attribute__((no_builtin)) void *
 ___memmove(void *dst, const void *src, size_t n)
 {
     return memmove(dst, src, n);
 }
 
-__attribute__((no_builtin("memset"))) void *
+__attribute__((no_builtin)) void *
 ___memset(void *dst, int c, size_t n)
 {
     return memset(dst, c, n);
 }
 
-__attribute__((no_builtin("memset"))) void
+__attribute__((no_builtin)) void
 ___bzero(void *dst, size_t n)
 {
     memset(dst, 0, n);
+}
+
+__attribute__((no_builtin)) int
+___strcmp(const char *a, const char *b)
+{
+    return strcmp(a, b);
+}
+
+__attribute__((no_builtin)) char *
+___strcpy(char *dst, const char *src)
+{
+    return strcpy(dst, src);
+}
+
+__attribute__((no_builtin)) size_t
+___strlen(const char *s)
+{
+    return strlen(s);
+}
+
+__attribute__((no_builtin)) char *
+___strstr(const char *s, const char *find)
+{
+    return (char *)strstr(s, find);
 }

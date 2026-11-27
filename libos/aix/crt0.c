@@ -35,6 +35,7 @@
 
 #include "local-aix.h"
 #include <stdlib.h>
+#include <sys/_initfini.h>
 
 extern char **environ;
 extern int    main(int, char **, char **);
@@ -50,5 +51,10 @@ void
 __start(int argc, char **argv, char **envp)
 {
     environ = envp;
+    /* xcoff-ld collects the __sinit* constructors clang emits into the
+     * table between __init_array_start and __init_array_end (and the
+     * __sterm* destructors into the fini table, which exit runs). */
+    for (void (**fn)(void) = __init_array_start; fn != __init_array_end; fn++)
+        (*fn)();
     exit(main(argc, argv, envp));
 }

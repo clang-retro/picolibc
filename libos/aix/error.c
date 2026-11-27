@@ -58,13 +58,33 @@ aix_errno(int e)
     }
 }
 
-long
-__aix_result(long r, int saved)
+/*
+ * The kernel stores the AIX error number of a failed call in the program's
+ * exported errno variable (the SDK's libc.exp exports it). picolibc's errno
+ * is (*__errno()) on AIX, a separate variable: __errno moves a number the
+ * kernel left into it, mapped to picolibc's numbering, first. So calls bound
+ * straight to the kernel (close, unlink, rmdir and the rest) set errno as
+ * the wrappers do.
+ */
+volatile int __aix_kernel_errno __asm__("errno");
+static int   __aix_errno_value;
+
+int *
+__errno(void)
 {
-    if (r != -1) {
-        errno = saved;
-        return r;
+    int k = __aix_kernel_errno;
+    if (k) {
+        __aix_kernel_errno = 0;
+        __aix_errno_value = aix_errno(k);
     }
-    errno = errno ? aix_errno(errno) : EIO;
-    return -1;
+    return &__aix_errno_value;
+}
+
+long
+__aix_result(long r)
+{
+    /* A failure the kernel gave no error number for. */
+    if (r == -1 && __aix_kernel_errno == 0)
+        __aix_kernel_errno = 5; /* EIO */
+    return r;
 }

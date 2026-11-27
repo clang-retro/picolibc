@@ -70,21 +70,63 @@ int  kioctl(int fd, int req, void *arg, void *ext);
 int  accessx(const char *path, int mode, int who);
 int  _getpid(void);
 
+/* The 32-bit kernel's struct stat, which statx and fstatx fill in. */
+struct __aix_stat {
+    uint32_t st_dev;
+    uint32_t st_ino;
+    uint32_t st_mode;
+    int16_t  st_nlink;
+    uint16_t st_flag;
+    uint32_t st_uid;
+    uint32_t st_gid;
+    uint32_t st_rdev;
+    int32_t  st_size;
+    int32_t  st_atime_sec, st_atime_nsec;
+    int32_t  st_mtime_sec, st_mtime_nsec;
+    int32_t  st_ctime_sec, st_ctime_nsec;
+    uint32_t st_blksize;
+    uint32_t st_blocks;
+    int32_t  st_vfstype;
+    uint32_t st_vfs;
+    uint32_t st_type;
+    uint32_t st_gen;
+    uint32_t st_reserved[9];
+};
+
+_Static_assert(sizeof(struct __aix_stat) == 116, "AIX struct stat is 116 bytes");
+
+#define __AIX_STX_NORMAL 0
+
+int statx(const char *path, struct __aix_stat *buf, int len, int cmd);
+int fstatx(int fd, struct __aix_stat *buf, int len, int cmd);
+
+struct stat;
+void __aix_stat_convert(const struct __aix_stat *a, struct stat *st);
+
+/* gettimer(TIMEOFDAY, ...) reads the time of day in seconds and
+   nanoseconds. */
+struct __aix_timestruc {
+    uint32_t tv_sec;
+    int32_t  tv_nsec;
+};
+
+#define __AIX_TIMEOFDAY 9
+
+int gettimer(int timer, struct __aix_timestruc *value);
+
 /*
- * The kernel sets the thread's errno variable when a call fails. The
- * program's errno is exported (the SDK's libc.exp) so the loader can find
- * it. __aix_result turns a result into picolibc's convention, with AIX
- * error numbers mapped to picolibc's, and gives errno a value even if the
- * kernel left it alone.
+ * The kernel stores the AIX error number of a failed call in the exported
+ * errno variable, and error.c's __errno maps it to picolibc's numbering
+ * when errno is next read or written. __aix_call clears it before the call
+ * so a failure with no number can be given EIO.
  */
-long __aix_result(long r, int saved);
+extern volatile int __aix_kernel_errno __asm__("errno");
+long __aix_result(long r);
 
 #define __aix_call(expr)                                                      \
     ({                                                                        \
-        int  __saved = errno;                                                 \
-        errno = 0;                                                            \
-        long __r = (long)(expr);                                              \
-        __aix_result(__r, __saved);                                           \
+        __aix_kernel_errno = 0;                                               \
+        __aix_result((long)(expr));                                           \
     })
 
 #endif /* _LOCAL_AIX_H_ */

@@ -46,6 +46,8 @@ has_os_fileio = true
 srcs_os_aix = [
   'access.c',
   'error.c',
+  'fstat.c',
+  'gettimeofday.c',
   'getpid.c',
   'heap.c',
   'isatty.c',
@@ -53,6 +55,7 @@ srcs_os_aix = [
   'millicode.c',
   'open.c',
   'read.c',
+  'stat.c',
   'write.c',
 ]
 
