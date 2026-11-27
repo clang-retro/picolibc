@@ -47,6 +47,13 @@ extern int    main(int, char **, char **);
  */
 void __start(int argc, char **argv, char **envp) __attribute__((noreturn));
 
+/*
+ * The kernel stores the error number of a failed call in the exported
+ * errno variable (error.c), so every program has it, even one that never
+ * looks at errno.
+ */
+__attribute__((used)) static volatile int *const __aix_errno_ref = &__aix_kernel_errno;
+
 void
 __start(int argc, char **argv, char **envp)
 {
