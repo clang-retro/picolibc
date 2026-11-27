@@ -86,6 +86,10 @@ if get_option('os-sco')
   subdir('sco')
 endif
 
+if get_option('os-aix')
+  subdir('aix')
+endif
+
 if get_option('os-os2')
   subdir('os2')
 endif

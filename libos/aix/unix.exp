@@ -1,0 +1,19 @@
+#!/unix
+* The kernel calls that the clang-retro AIX C library uses, for xcoff-ld
+* (-bI:unix.exp). They are a subset of AIX's /lib/syscalls.exp; the system
+* loader binds them by name when a program starts.
+_exit syscall
+_getpid syscall
+accessx syscall
+chdir syscall
+close syscall
+kill syscall
+kioctl syscall
+klseek syscall
+kopen syscall
+kread syscall
+kwrite syscall
+mkdir syscall
+rename syscall
+rmdir syscall
+unlink syscall

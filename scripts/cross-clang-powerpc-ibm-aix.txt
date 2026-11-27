@@ -1,0 +1,19 @@
+# AIX 4 and 5 on 32-bit PowerPC, for static programs, built with the
+# clang-retro LLVM toolchain (https://github.com/clang-retro/llvm). The
+# code is for the 601 (clang's default for AIX 4 and 5), so it runs on every
+# PowerPC these systems support. The triple carries no OS version because
+# meson would read "4.3" from it as the compiler version.
+[binaries]
+c = ['clang', '--target=powerpc-ibm-aix', '-mcpu=601', '-fuse-ld=lld', '-nostdlib']
+ar = 'llvm-ar'
+nm = 'llvm-nm'
+strip = 'llvm-strip'
+
+[host_machine]
+system = 'aix'
+cpu_family = 'powerpc'
+cpu = 'ppc'
+endian = 'big'
+
+[properties]
+skip_sanity_check = true

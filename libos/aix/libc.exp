@@ -1,0 +1,3 @@
+* Symbols a program exports to the AIX loader (xcoff-ld -bE:libc.exp).
+* The kernel sets errno when a system call fails.
+errno
