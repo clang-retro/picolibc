@@ -78,6 +78,10 @@ typedef int fexcept_t;
 #define _ENABLE_MASK                                                                        \
     ((FE_DIVBYZERO | FE_INEXACT | FE_INVALID | FE_OVERFLOW | FE_UNDERFLOW) >> _FPUSW_SHIFT)
 
+/* clang predefines __mtfsf as an XL compatibility builtin on AIX */
+#undef __mffs
+#undef __mtfsf
+
 #ifndef _SOFT_FLOAT
 #ifdef __SPE__
 #define __mffs(__env)  __asm__ __volatile__("mfspr %0, 512" : "=r"((__env)->__bits.__reg))

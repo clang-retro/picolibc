@@ -1688,6 +1688,12 @@ elif errno_function == 'zephyr'
   endif
 endif
 
+# On AIX the kernel stores AIX error numbers in the exported errno
+# variable; libos/aix's __errno maps them to picolibc's when errno is used.
+if get_option('os-aix') and errno_function == 'false'
+  errno_function = '__errno'
+endif
+
 if errno_function != 'false'
   conf_data.set('__PICOLIBC_ERRNO_FUNCTION', errno_function)
 endif
